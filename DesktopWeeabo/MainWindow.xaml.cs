@@ -26,13 +26,14 @@ namespace DesktopWeeabo
     public partial class MainWindow : Window
     {
 
-        System.Windows.Threading.DispatcherTimer typingTimer;
+        //System.Windows.Threading.DispatcherTimer typingTimer;
 
         public MainWindow()
         {
             InitializeComponent();
+            this.DataContext = new NavigationViewModel();
         }
-
+        /*
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("esimene");
@@ -92,7 +93,7 @@ namespace DesktopWeeabo
                     /*foreach (var a in e.Descendants())
                     {
                         Console.WriteLine(a);
-                    }*/
+                    }
                     listBox.Items.Add(e);
                 }
             }
@@ -102,6 +103,6 @@ namespace DesktopWeeabo
             }
 
             
-        }
+        }*/
     }
 }

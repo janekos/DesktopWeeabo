@@ -38,6 +38,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -51,6 +52,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -69,18 +72,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Views\searchView.xaml.cs">
-      <DependentUpon>searchView.xaml</DependentUpon>
+    <Compile Include="NavigationViewModel.cs" />
+    <Compile Include="SearchView.xaml.cs">
+      <DependentUpon>SearchView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\toWatchView.xaml.cs">
-      <DependentUpon>toWatchView.xaml</DependentUpon>
+    <Compile Include="SearchViewModel.cs" />
+    <Compile Include="ToWatchView.xaml.cs">
+      <DependentUpon>ToWatchView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\watchedView.xaml.cs">
-      <DependentUpon>watchedView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\watchingView.xaml.cs">
-      <DependentUpon>watchingView.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="ToWatchViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -94,19 +94,11 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\searchView.xaml">
+    <Page Include="SearchView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\toWatchView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\watchedView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\watchingView.xaml">
+    <Page Include="ToWatchView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

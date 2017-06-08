@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace DesktopWeeabo
 {
     /// <summary>
-    /// Interaction logic for toWatchView.xaml
+    /// Interaction logic for SearchView.xaml
     /// </summary>
-    public partial class toWatchView : UserControl
+    public partial class SearchView : UserControl
     {
-        public toWatchView()
+        public SearchView()
         {
             InitializeComponent();
         }
