@@ -14,6 +14,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace DesktopWeeabo
 {
@@ -22,6 +25,9 @@ namespace DesktopWeeabo
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        System.Windows.Threading.DispatcherTimer typingTimer;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -42,29 +48,60 @@ namespace DesktopWeeabo
             Console.WriteLine("kolmas");
         }
 
-        private async void Search_TextChanged(object sender, EventArgs e)
+        private void Search_TextChanged(object sender, EventArgs e)
         {
-            try
+            var tb = sender as TextBox;
+            if (typingTimer == null)
             {
-                var username = "null";
-                var password = "null";
-                string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(username + ":" + password));
-                var textBox = sender as TextBox;
-                var query = textBox.Text;
-                Console.WriteLine(query);
+                
+                typingTimer = new DispatcherTimer();
+                typingTimer.Interval = TimeSpan.FromMilliseconds(500);
+                
 
-                WebClient client = new WebClient();
-                client.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;
-                client.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
-                Stream data = client.OpenRead("https://myanimelist.net/api/anime/search.xml?q="+query);
-                StreamReader reader = new StreamReader(data);
-                string responseFromServer = reader.ReadToEnd();
-                //Console.WriteLine(responseFromServer);
-                data.Close();
-                reader.Close();
+                typingTimer.Tick += (s, args) => {
+                    typingTimer.Stop();
+                    if (tb.Text.Length > 0)
+                    {
+                        BuildItems(tb.Text);
+                    }
+                    else
+                    {
+                        listBox.Items.Clear();
+                    }
+                };
             }
-            catch{
+            typingTimer.Stop();
+            typingTimer.Tag = (sender as TextBox).Text;
+            typingTimer.Start();           
+            
+        }
+
+        private void BuildItems(string query)
+        {
+            listBox.Items.Clear();
+            string entries = ItemSearchHandler.MakeSearch(query);
+
+            if (entries.Length > 0)
+            {
+                XDocument response = XDocument.Parse(entries);
+                
+                foreach (var e in response.Descendants("entry"))
+                {
+                    Console.WriteLine(e.Element("id"));
+                    Console.WriteLine(e.Element("title"));
+                    /*foreach (var a in e.Descendants())
+                    {
+                        Console.WriteLine(a);
+                    }*/
+                    listBox.Items.Add(e);
+                }
             }
+            else
+            {
+                listBox.Items.Add("No results");
+            }
+
+            
         }
     }
 }
