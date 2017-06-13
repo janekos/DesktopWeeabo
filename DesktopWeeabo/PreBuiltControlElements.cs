@@ -16,7 +16,7 @@ namespace DesktopWeeabo
     {
         private static Boolean OpenExtraInfo { get; set; } = false;
 
-        public static ListBoxItem ListBoxItemForAnime(XElement e, ListBox listBox, int view)
+        public static ListBoxItem ListBoxItemForAnime(XElement e, ListBox listBox, int view, Boolean listBoxItemRemovalAllowance)
         {
             Image image = new Image()
             {
@@ -34,6 +34,16 @@ namespace DesktopWeeabo
                 Text = (string)(e.Element("title")),
                 TextTrimming = TextTrimming.WordEllipsis
             };
+
+            if (view == 1)
+            {
+                //todo watched review and score input and view fields;
+            }
+
+            if (view == 3)
+            {
+                //todo dropping reason input and view fields
+            }
 
             TextBlock synopsis = new TextBlock()
             {
@@ -125,13 +135,7 @@ namespace DesktopWeeabo
             comboBox.Items.Add(cbi2);
             comboBox.Items.Add(cbi3);
             comboBox.Items.Add(cbi4);
-            comboBox.SelectionChanged += (sender, sentEvent) => {
-                var cbox = sender as ComboBox;
-                var val = cbox.SelectedValue;
-                var id = cbox.Name;
-                //var parentName = VisualTreeHelper.GetParent(cbox) as Grid;
-                System.Diagnostics.Debug.WriteLine(e);
-            };
+            if (view != -1){comboBox.SelectedIndex = view;}
 
             TextBlock showMore = new TextBlock()
             {
@@ -168,8 +172,22 @@ namespace DesktopWeeabo
                 BorderThickness = new Thickness(0, 0, 0, 0.5),
                 BorderBrush = Brushes.Black
             };
+
             showMore.MouseLeftButtonDown += (sender, eventarg) => {
                 ExpandListItemForExtraInfo(sender, listBox, listBox.Items.IndexOf(itm), middleTextPanel.ActualHeight);
+            };
+
+            comboBox.SelectionChanged += (sender, sentEvent) => {
+                var cbox = sender as ComboBox;
+                string viewingStatus = (string)(cbox.SelectedItem as ComboBoxItem).Content;
+                //int viewingStatusInt = cbox.Items.IndexOf(cbox.SelectedItem);
+                //todo displaying watched and dropped input fields and registering them
+
+                ItemHandler.UpdateSaveFile(e, viewingStatus);
+
+                if (listBoxItemRemovalAllowance){listBox.Items.RemoveAt(listBox.Items.IndexOf(itm));}                
+                //var listBoxItem = VisualTreeHelper.GetParent(VisualTreeHelper.GetParent(cbox) as Grid) as ListBoxItem;
+                //System.Diagnostics.Debug.WriteLine();
             };
 
             return itm;
@@ -182,7 +200,9 @@ namespace DesktopWeeabo
                 Margin = new Thickness(0, (lb.ActualHeight / 2) - 20, 0, 0),
                 FontSize = 30,
                 Text = message,
-                FontWeight = FontWeights.Bold
+                FontWeight = FontWeights.Bold,
+                TextWrapping = TextWrapping.Wrap,
+                TextAlignment = TextAlignment.Center
             };
 
             ListBoxItem itm = new ListBoxItem()
@@ -190,7 +210,8 @@ namespace DesktopWeeabo
                 HorizontalAlignment = HorizontalAlignment.Center,
                 HorizontalContentAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                VerticalContentAlignment = VerticalAlignment.Center
+                VerticalContentAlignment = VerticalAlignment.Center,
+                Name = message.Split(' ').First()
             };
 
             itm.Content = tb;

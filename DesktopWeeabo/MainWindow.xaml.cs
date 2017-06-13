@@ -29,6 +29,18 @@ namespace DesktopWeeabo
         {
             InitializeComponent();
             this.DataContext = new NavigationViewModel();
+            Search.Background = Brushes.LightBlue;
+        }
+
+        private void SelectedButton(object sender, RoutedEventArgs e)
+        {
+            ToWatch.Background = Brushes.White;
+            Watching.Background = Brushes.White;
+            Dropped.Background = Brushes.White;
+            Search.Background = Brushes.White;
+            Watched.Background = Brushes.White;
+            var selected = sender as Button;
+            selected.Background = Brushes.LightBlue;
         }
     }
 }

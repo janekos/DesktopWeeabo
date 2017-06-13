@@ -4,6 +4,9 @@
              xmlns:local="clr-namespace:DesktopWeeabo"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
-    </Application.Resources>
+        <Style TargetType="{x:Type ListBoxItem}">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+    </Application.Resources>    
 </Application>

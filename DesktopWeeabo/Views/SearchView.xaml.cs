@@ -61,6 +61,8 @@ namespace DesktopWeeabo
             listBox.Items.Clear();
             listBox.Items.Add(PreBuiltControlElements.NotifitacationMessagesForListBox(listBox, "Loading"));
             string entries = await ItemHandler.MakeWebSearch(query);
+            XDocument localEntries = ItemHandler.MakeLocalSearch(query);
+            string[] viewingStatuses = { "To Watch", "Watched", "Watching", "Dropped" };
 
             if (!entries.Equals("Exception was thrown"))
             {
@@ -72,7 +74,16 @@ namespace DesktopWeeabo
 
                     foreach (var e in response.Descendants("entry"))
                     {
-                        listBox.Items.Add(PreBuiltControlElements.ListBoxItemForAnime(e, listBox, 0));                        
+                        int view = -1;
+                        foreach (var el in localEntries.Descendants("entry"))
+                        {
+                            if (int.Parse(e.Element("id").Value) == int.Parse(el.Element("id").Value))
+                            {
+                                view = Array.IndexOf(viewingStatuses, (string)el.Element("ViewingStatus").Value);
+                                break;
+                            }
+                        }
+                        listBox.Items.Add(PreBuiltControlElements.ListBoxItemForAnime(e, listBox, view, false));
                     }
                 }
                 else

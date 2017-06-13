@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
+using System.Xml.Linq;
 
 namespace DesktopWeeabo
 {
@@ -24,5 +26,17 @@ namespace DesktopWeeabo
         {
             InitializeComponent();
         }
+
+        private void Search_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            RepeatingViewFunctions.TextBlockTimer(sender, listBox);
+        }
+
+        private void Load_animes(object sender, RoutedEventArgs e)
+        {
+            RepeatingViewFunctions.BuildListBoxItems(listBox, "", 0);
+        }
+
+        //todo item sorting by different criterias
     }
 }

@@ -13,6 +13,9 @@ namespace DesktopWeeabo
     {
         public ICommand SearchCommand { get; set; }
         public ICommand ToWatchCommand { get; set; }
+        public ICommand WatchedCommand { get; set; }
+        public ICommand WatchingCommand { get; set; }
+        public ICommand DroppedCommand { get; set; }
 
         private object selectedViewModel;
 
@@ -27,6 +30,9 @@ namespace DesktopWeeabo
         {
             SearchCommand = new BaseCommand(OpenSearch);
             ToWatchCommand = new BaseCommand(OpenToWatch);
+            WatchedCommand = new BaseCommand(OpenWatched);
+            WatchingCommand = new BaseCommand(OpenWatching);
+            DroppedCommand = new BaseCommand(OpenDropped);
         }
 
         private void OpenSearch(object obj)
@@ -36,6 +42,18 @@ namespace DesktopWeeabo
         private void OpenToWatch(object obj)
         {
             SelectedViewModel = new ToWatchViewModel();
+        }
+        private void OpenWatched(object obj)
+        {
+            SelectedViewModel = new WatchedViewModel();
+        }
+        private void OpenWatching(object obj)
+        {
+            SelectedViewModel = new WatchingViewModel();
+        }
+        private void OpenDropped(object obj)
+        {
+            SelectedViewModel = new DroppedViewModel();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
