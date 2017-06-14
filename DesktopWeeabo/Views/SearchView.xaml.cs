@@ -59,7 +59,7 @@ namespace DesktopWeeabo
         private async void BuildListBoxItems(string query)
         {
             listBox.Items.Clear();
-            listBox.Items.Add(PreBuiltControlElements.NotifitacationMessagesForListBox(listBox, "Loading"));
+            listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "Loading"));
             string entries = await ItemHandler.MakeWebSearch(query);
             XDocument localEntries = ItemHandler.MakeLocalSearch(query);
             string[] viewingStatuses = { "To Watch", "Watched", "Watching", "Dropped" };
@@ -71,7 +71,7 @@ namespace DesktopWeeabo
                     listBox.Items.Clear();
 
                     XDocument response = XDocument.Parse(entries);
-
+                    int count = 0;
                     foreach (var e in response.Descendants("entry"))
                     {
                         int view = -1;
@@ -79,17 +79,18 @@ namespace DesktopWeeabo
                         {
                             if (int.Parse(e.Element("id").Value) == int.Parse(el.Element("id").Value))
                             {
-                                view = Array.IndexOf(viewingStatuses, (string)el.Element("ViewingStatus").Value);
+                                view = Array.IndexOf(viewingStatuses, (string)el.Element("viewingstatus").Value);
                                 break;
                             }
                         }
-                        listBox.Items.Add(PreBuiltControlElements.ListBoxItemForAnime(e, listBox, view, false));
+                        listBox.Items.Add(new ListBoxItemForAnime(e, listBox, view, false, count));
+                        count++;
                     }
                 }
                 else
                 {
                     listBox.Items.Clear();
-                    listBox.Items.Add(PreBuiltControlElements.NotifitacationMessagesForListBox(listBox, "No results"));
+                    listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "No results"));
                 }
             }
             else if (entries.Equals("Exception was thrown"))

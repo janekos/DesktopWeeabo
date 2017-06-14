@@ -40,6 +40,16 @@ namespace DesktopWeeabo
 
         public static XDocument MakeLocalSearch(string query, string viewingStatus = "")
         {
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+                CreateSaveFile();
+            }
+            if (!File.Exists(path + "/entries.xml"))
+            {
+                CreateSaveFile();
+            }
+
             XDocument doc = XDocument.Load(path + "/entries.xml");
             XDocument result = new XDocument(new XElement("anime"));
             int queryLen = query.Length;
@@ -49,7 +59,7 @@ namespace DesktopWeeabo
             {
                 if (viewingStatusLen != 0)
                 {                
-                    if (e.Element("ViewingStatus").Value.Equals(viewingStatus))
+                    if (e.Element("viewingstatus").Value.Equals(viewingStatus))
                     {
                         if (queryLen != 0)
                         {
@@ -76,11 +86,15 @@ namespace DesktopWeeabo
             return result;
         }
 
-        public static void UpdateSaveFile(XElement itemToModify, string viewingStatus)
+        public static void UpdateSaveFile(XElement itemToModify, string viewingStatus, string userReview, string userScore, string userDropReason)
         {
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
+                CreateSaveFile();
+            }
+            if (!File.Exists(path + "/entries.xml"))
+            {
                 CreateSaveFile();
             }
 
@@ -91,7 +105,10 @@ namespace DesktopWeeabo
             {
                 if (int.Parse(e.Element("id").Value) == int.Parse(itemToModify.Element("id").Value))
                 {
-                    e.Element("ViewingStatus").Value = viewingStatus;
+                    e.Element("viewingstatus").Value = viewingStatus;
+                    if (userReview.Length > 0) { e.Element("review").Value = userReview; }
+                    if (userScore.Length > 0) { e.Element("personalscore").Value = userScore; }
+                    if (userDropReason.Length > 0) { e.Element("dropreason").Value = userDropReason; }
                     entryExists = true;
                     break;
                 }
@@ -99,7 +116,7 @@ namespace DesktopWeeabo
 
             if (!entryExists)
             {
-                itemToModify.Add(new XElement("ViewingStatus", viewingStatus));
+                itemToModify.Add(new XElement("viewingstatus", viewingStatus), new XElement("review", userReview), new XElement("personalscore", userScore), new XElement("dropreason", userDropReason));
                 doc.Root.Add(itemToModify);
             }
 

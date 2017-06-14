@@ -43,7 +43,7 @@ namespace DesktopWeeabo
         public static void BuildListBoxItems(ListBox listBox, string query, int view)
         {
             listBox.Items.Clear();
-            listBox.Items.Add(PreBuiltControlElements.NotifitacationMessagesForListBox(listBox, "Loading"));
+            listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "Loading"));
 
             string[] viewingStatuses = { "To Watch", "Watched", "Watching", "Dropped" };
             XDocument entries = ItemHandler.MakeLocalSearch(query, viewingStatuses[view]);
@@ -53,15 +53,17 @@ namespace DesktopWeeabo
             if (entries.Descendants("entry").Any())
             {
                 listBox.Items.Clear();
+                int count = 0;
                 foreach (var e in entries.Descendants("entry"))
                 {
-                    listBox.Items.Add(PreBuiltControlElements.ListBoxItemForAnime(e, listBox, view, true));
+                    listBox.Items.Add(new ListBoxItemForAnime(e, listBox, view, true, count));
+                    count++;
                 }
             }
             else if (!entries.Descendants("entry").Any())
             {
                 listBox.Items.Clear();
-                listBox.Items.Add(PreBuiltControlElements.NotifitacationMessagesForListBox(listBox, "You have not listed any animes as '"+ viewingStatuses[view] + "'."));
+                listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "You have not listed any animes as '"+ viewingStatuses[view] + "'."));
             }
         }
     }

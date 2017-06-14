@@ -88,13 +88,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ListBoxItemForAnime.cs" />
+    <Compile Include="NotifitacationMessagesForListBox.cs" />
     <Compile Include="RepeatingViewFunctions.cs" />
     <Compile Include="Views\DroppedView.xaml.cs">
       <DependentUpon>DroppedView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\DroppedViewModel.cs" />
     <Compile Include="NavigationViewModel.cs" />
-    <Compile Include="PreBuiltControlElements.cs" />
     <Compile Include="Views\SearchView.xaml.cs">
       <DependentUpon>SearchView.xaml</DependentUpon>
     </Compile>
