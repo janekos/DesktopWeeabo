@@ -71,7 +71,6 @@ namespace DesktopWeeabo
                     listBox.Items.Clear();
 
                     XDocument response = XDocument.Parse(entries);
-                    int count = 0;
                     foreach (var e in response.Descendants("entry"))
                     {
                         int view = -1;
@@ -79,12 +78,12 @@ namespace DesktopWeeabo
                         {
                             if (int.Parse(e.Element("id").Value) == int.Parse(el.Element("id").Value))
                             {
-                                view = Array.IndexOf(viewingStatuses, (string)el.Element("viewingstatus").Value);
+                                view = Array.IndexOf(viewingStatuses, el.Element("viewingstatus").Value);
+                                listBox.Items.Add(new ListBoxItemForAnime(el, listBox, view, false));
                                 break;
                             }
                         }
-                        listBox.Items.Add(new ListBoxItemForAnime(e, listBox, view, false, count));
-                        count++;
+                        if (view == -1) { listBox.Items.Add(new ListBoxItemForAnime(e, listBox, view, false)); }                        
                     }
                 }
                 else

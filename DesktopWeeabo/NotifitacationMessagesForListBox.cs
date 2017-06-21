@@ -13,9 +13,7 @@ namespace DesktopWeeabo
         public NotifitacationMessagesForListBox(double height, string message)
         {
             HorizontalAlignment = HorizontalAlignment.Center;
-            HorizontalContentAlignment = HorizontalAlignment.Center;
             VerticalAlignment = VerticalAlignment.Center;
-            VerticalContentAlignment = VerticalAlignment.Center;
             Content = SetMessage(height, message);
         }
 

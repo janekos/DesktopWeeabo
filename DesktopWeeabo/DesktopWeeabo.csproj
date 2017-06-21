@@ -95,7 +95,7 @@
       <DependentUpon>DroppedView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\DroppedViewModel.cs" />
-    <Compile Include="NavigationViewModel.cs" />
+    <Compile Include="ViewModels\NavigationViewModel.cs" />
     <Compile Include="Views\SearchView.xaml.cs">
       <DependentUpon>SearchView.xaml</DependentUpon>
     </Compile>

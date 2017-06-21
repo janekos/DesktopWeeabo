@@ -20,6 +20,8 @@ namespace DesktopWeeabo
     /// </summary>
     public partial class WatchingView : UserControl
     {
+        private RepeatingViewFunctions rvf = new RepeatingViewFunctions();
+
         public WatchingView()
         {
             InitializeComponent();
@@ -27,12 +29,12 @@ namespace DesktopWeeabo
 
         private void Search_TextChanged(object sender, TextChangedEventArgs e)
         {
-            RepeatingViewFunctions.TextBlockTimer(sender, listBox);
+            rvf.TextBlockTimer(sender, listBox, 2);
         }
 
         private void Load_animes(object sender, RoutedEventArgs e)
         {
-            RepeatingViewFunctions.BuildListBoxItems(listBox, "", 2);
+            rvf.BuildListBoxItems(listBox, "", 2);
         }
     }
 }

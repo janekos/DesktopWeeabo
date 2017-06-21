@@ -20,6 +20,8 @@ namespace DesktopWeeabo
     /// </summary>
     public partial class DroppedView : UserControl
     {
+        private RepeatingViewFunctions rvf = new RepeatingViewFunctions();
+
         public DroppedView()
         {
             InitializeComponent();
@@ -27,12 +29,12 @@ namespace DesktopWeeabo
 
         private void Search_TextChanged(object sender, TextChangedEventArgs e)
         {
-            RepeatingViewFunctions.TextBlockTimer(sender, listBox);
+            rvf.TextBlockTimer(sender, listBox, 3);
         }
 
         private void Load_animes(object sender, RoutedEventArgs e)
         {
-            RepeatingViewFunctions.BuildListBoxItems(listBox, "", 3);
+            rvf.BuildListBoxItems(listBox, "", 3);
         }
     }
 }

@@ -23,6 +23,8 @@ namespace DesktopWeeabo
     /// </summary>
     public partial class ToWatchView : System.Windows.Controls.UserControl
     {
+        private RepeatingViewFunctions rvf = new RepeatingViewFunctions();
+
         public ToWatchView()
         {
             InitializeComponent();
@@ -30,12 +32,12 @@ namespace DesktopWeeabo
 
         private void Search_TextChanged(object sender, TextChangedEventArgs e)
         {
-            RepeatingViewFunctions.TextBlockTimer(sender, listBox);
+            rvf.TextBlockTimer(sender, listBox, 0);
         }
 
         private void Load_animes(object sender, RoutedEventArgs e)
         {
-            RepeatingViewFunctions.BuildListBoxItems(listBox, "", 0);
+            rvf.BuildListBoxItems(listBox, "", 0);
         }
 
         //todo item sorting by different criterias

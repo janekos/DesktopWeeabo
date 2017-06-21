@@ -86,7 +86,7 @@ namespace DesktopWeeabo
             return result;
         }
 
-        public static void UpdateSaveFile(XElement itemToModify, string viewingStatus, string userReview, string userScore, string userDropReason)
+        public static void UpdateSaveFile(XElement itemToModify, string viewingStatus, string userReview = "", string userScore="", string userDropReason="", bool remove = false)
         {
             if (!Directory.Exists(path))
             {
@@ -105,18 +105,31 @@ namespace DesktopWeeabo
             {
                 if (int.Parse(e.Element("id").Value) == int.Parse(itemToModify.Element("id").Value))
                 {
-                    e.Element("viewingstatus").Value = viewingStatus;
-                    if (userReview.Length > 0) { e.Element("review").Value = userReview; }
-                    if (userScore.Length > 0) { e.Element("personalscore").Value = userScore; }
-                    if (userDropReason.Length > 0) { e.Element("dropreason").Value = userDropReason; }
+                    if (remove)
+                    {
+                        e.Remove();
+                    }
+                    else
+                    {
+                        e.Element("viewingstatus").Value = viewingStatus;
+                        if (userReview.Length > 0) { e.Element("review").Value = userReview; }
+                        if (userScore.Length > 0) { e.Element("personalscore").Value = userScore; }
+                        if (userDropReason.Length > 0) { e.Element("dropreason").Value = userDropReason; }
+                    }                    
                     entryExists = true;
+
                     break;
                 }
             }
 
             if (!entryExists)
             {
-                itemToModify.Add(new XElement("viewingstatus", viewingStatus), new XElement("review", userReview), new XElement("personalscore", userScore), new XElement("dropreason", userDropReason));
+                itemToModify.Add(
+                    new XElement("viewingstatus", viewingStatus),
+                    new XElement("review", userReview),
+                    new XElement("personalscore", userScore),
+                    new XElement("dropreason", userDropReason)
+                );
                 doc.Root.Add(itemToModify);
             }
 

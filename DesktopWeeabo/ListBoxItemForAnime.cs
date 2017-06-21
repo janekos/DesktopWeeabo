@@ -9,6 +9,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using System.Xml.Linq;
 
 namespace DesktopWeeabo
@@ -18,35 +19,21 @@ namespace DesktopWeeabo
         private bool listBoxItemRemovalAllowance = true, wasEventFiredBySystem = false, isListBoxItemExpanded = false;
         private XElement animeEntryXML;
         private ListBox listbox;
-        private int view, listBoxItemIndex;
-        private TextBlock userInputTitle, showMoreText, userInputPersonalScoreTitle, userInputPersonalScoreInputError;
-        private TextBox userInputTextBox, userInputPersonalScoreInput;
-        private StackPanel userInputButtons, userInputPersonalScore, userInputStackPanel, middleStackPanel;
-        private Button userInputConfirm, userInputCancel;
-        private ComboBox statusComboBox;
+        private int view;
+        private string userInputTextReview, userInputTextDrop, userScoreInputText;
         private Grid grid;
+        private string[] viewingStatuses = { "To Watch", "Watched", "Watching", "Dropped" };
 
-        public ListBoxItemForAnime(XElement _e, ListBox _listbox, int _view, bool _listBoxItemRemovalAllowance, int _listBoxItemIndex)
+        public ListBoxItemForAnime(XElement _e, ListBox _listbox, int _view, bool _listBoxItemRemovalAllowance)
         {
             listbox = _listbox;
             view = _view;
             listBoxItemRemovalAllowance = _listBoxItemRemovalAllowance;
             animeEntryXML = _e;
-            listBoxItemIndex = _listBoxItemIndex;
 
-            userInputTitle = SetUserInputTitle();
-            userInputTextBox = SetUserInputTextBox();
-            userInputPersonalScoreTitle = SetUserInputPersonalScoreTitle();
-            userInputPersonalScoreInput = SetUserInputPersonalScoreInput();
-            userInputPersonalScoreInputError = SetUserInputPersonalScoreInputError();
-            userInputPersonalScore = SetUserInputPersonalScore();
-            userInputConfirm = SetUserInputConfirm();
-            userInputCancel = SetUserInputCancel();
-            userInputButtons = SetUserInputButtons();
-            userInputStackPanel = SetUserInputStackPanel();
-            middleStackPanel = SetMiddleStackPanel((string)(animeEntryXML.Element("review")), (string)(animeEntryXML.Element("personalscore")), (string)(animeEntryXML.Element("dropreason")));            
-            statusComboBox = SetStatusComboBox();
-            showMoreText = SetShowMoreText();
+            userInputTextReview = animeEntryXML.Element("review") != null ? (string)(animeEntryXML.Element("review")) : "";
+            userScoreInputText = animeEntryXML.Element("personalscore") != null ? (string)(animeEntryXML.Element("personalscore")) : "";
+            userInputTextDrop = animeEntryXML.Element("dropreason") != null ? (string)(animeEntryXML.Element("dropreason")) : "";
 
             grid = SetGrid();
 
@@ -80,16 +67,21 @@ namespace DesktopWeeabo
             };
         }
 
-        private TextBlock SetUserInputTitle() {
-            return new TextBlock(){ Margin = new Thickness(0, 0, 0, 5) };
+        private TextBlock SetUserInputTitle(string title) {
+            TextBlock tb =  new TextBlock(){ Margin = new Thickness(0, 0, 0, 5) };
+            tb.Inlines.Add(new Bold(new Run(title)));
+            tb.Inlines.Add(new Run("(you can leave it empty)"));
+            return tb;
         }
 
-        private TextBox SetUserInputTextBox() {
-            return new TextBox()
-            {
+        private TextBox SetUserInputTextBox(bool showScore) {
+            TextBox tb = new TextBox()
+            { 
                 Margin = new Thickness(0, 0, 0, 5),
                 TextWrapping = TextWrapping.Wrap
             };
+            tb.Text = showScore ? userInputTextReview : userInputTextDrop;
+            return tb;
         }
 
         private TextBlock SetUserInputPersonalScoreTitle() {
@@ -101,11 +93,14 @@ namespace DesktopWeeabo
         }
 
         private TextBox SetUserInputPersonalScoreInput() {
-            return new TextBox()
+            TextBox tb = new TextBox()
             {
+                Text = userScoreInputText,
                 Width = 60,
                 Margin = new Thickness(0, 0, 10, 0)
             };
+            tb.KeyUp += KeyUp_UserScoreInputTextBox;
+            return tb;
         }
 
         private TextBlock SetUserInputPersonalScoreInputError() {
@@ -123,9 +118,9 @@ namespace DesktopWeeabo
                 Orientation = Orientation.Horizontal,
                 Margin = new Thickness(0, 5, 0, 5)
             };
-            sp.Children.Add(userInputPersonalScoreTitle);
-            sp.Children.Add(userInputPersonalScoreInput);
-            sp.Children.Add(userInputPersonalScoreInputError);
+            sp.Children.Add(SetUserInputPersonalScoreTitle());
+            sp.Children.Add(SetUserInputPersonalScoreInput());
+            sp.Children.Add(SetUserInputPersonalScoreInputError());
 
             return sp;
         }
@@ -156,24 +151,23 @@ namespace DesktopWeeabo
             {
                 Orientation = Orientation.Horizontal
             };
-            sp.Children.Add(userInputConfirm);
-            sp.Children.Add(userInputCancel);
+            sp.Children.Add(SetUserInputConfirm());
+            sp.Children.Add(SetUserInputCancel());
             return sp;
         }
 
-        private StackPanel SetUserInputStackPanel() {
+        private StackPanel SetUserInputStackPanel(string title, bool showScore) {
             StackPanel sp = new StackPanel()
             {
                 Margin = new Thickness(95, 30, 110, 10)
             };
-            sp.Children.Add(userInputTitle);
-            sp.Children.Add(userInputTextBox);
-            sp.Children.Add(userInputPersonalScore);
-            sp.Children.Add(userInputButtons);
-            sp.Visibility = Visibility.Collapsed;
+            sp.Children.Add(SetUserInputTitle(title));
+            sp.Children.Add(SetUserInputTextBox(showScore));
+            if (showScore) { sp.Children.Add(SetUserInputPersonalScore()); }           
+            sp.Children.Add(SetUserInputButtons());
             return sp;
         }
-
+        
         private TextBlock SetSynopsisText(string text) {
             TextBlock tb = new TextBlock()
             {
@@ -195,61 +189,55 @@ namespace DesktopWeeabo
             return tb;
         }
 
-        private StackPanel SetMiddleStackPanel(string userReview, string userScore, string userDropReason) {
+        private TextBlock SetUserReviewText(string title, string text, Run textChange)
+        {
+            TextBlock tb = new TextBlock()
+            {
+                TextWrapping = TextWrapping.Wrap,
+                TextTrimming = TextTrimming.WordEllipsis
+            };
+            tb.Inlines.Add(new Bold(new Run(title)));
+            tb.Inlines.Add(new Run(text));
+            tb.Inlines.Add(textChange);
+            return tb;
+        }
 
+        private TextBlock SetReviewPersonalScore(string text)
+        {
+            TextBlock tb = new TextBlock();
+            tb.Inlines.Add(new Bold(new Run("Personal score: ")));
+            tb.Inlines.Add(new Run(text));
+            return tb;
+        }
+
+        private Run SetAddChange(string first, bool showScore, Visibility visibility)
+        {
+            Run r = new Run(" Change") { Foreground = Brushes.Blue };
+            r.MouseLeftButtonDown += (s, e) => { ShowUserInputPane(first, showScore, this); };
+            return r;
+        }
+
+        private StackPanel SetMiddleStackPanel()
+        {
             StackPanel sp = new StackPanel() { Margin = new Thickness(95, 30, 110, 10) };
+
             if (view == 1)
             {
-                bool reviewCondition = (userReview != null) && (userReview.Length > 0);
-                bool scoreCondition = (userScore != null) && (userScore.Length > 0);
-
-                string userReviewTextBlock = reviewCondition ? userReview : "You haven't written a review for this anime.";
-                string userReviewTextBox = reviewCondition ? userReview : "";
-                string userScoreTextBlock = scoreCondition ? userScore : "You haven't scored this anime.";
-                string userScoreTextBox = scoreCondition ? userScore : "";
-
-                Run addReview = new Run(" Change") { Foreground = Brushes.Blue };
-                addReview.MouseLeftButtonDown += (s, e) => { ShowUserInputPane("Your personal review: ", Visibility.Visible, this); };
-
-                TextBlock review = new TextBlock()
-                {
-                    TextWrapping = TextWrapping.Wrap,
-                    TextTrimming = TextTrimming.WordEllipsis
-                };
-                review.Inlines.Add(new Bold(new Run("Personal review: ")));
-                review.Inlines.Add(new Run(userReview));
-                review.Inlines.Add(addReview);
-                userInputTextBox.Text = userReviewTextBox;
-
-                TextBlock reviewPersonalScore = new TextBlock();
-                reviewPersonalScore.Inlines.Add(new Bold(new Run("Personal score: ")));
-                reviewPersonalScore.Inlines.Add(new Run(userScore));
-                userInputPersonalScoreInput.Text = userScoreTextBox;
-
-                sp.Children.Add(review);
-                sp.Children.Add(reviewPersonalScore);
+                bool reviewCondition = userInputTextReview.Length > 0;
+                bool scoreCondition = userScoreInputText.Length > 0;
+                string userReviewTextBlock = reviewCondition ? userInputTextReview : "You haven't written a review for this anime.";
+                string userScoreTextBlock = scoreCondition ? userScoreInputText : "You haven't scored this anime.";
+                
+                sp.Children.Insert(0, SetUserReviewText("Personal review: ", userReviewTextBlock, SetAddChange("Your personal review: ", true, Visibility.Visible)));
+                sp.Children.Insert(1, SetReviewPersonalScore(userScoreTextBlock));
             }
             if (view == 3)
             {
-                bool condition = (userDropReason != null) && (userDropReason.Length > 0);
+                bool condition = userInputTextDrop.Length > 0;
+                string userDropReasonTextBlock = condition ? userInputTextDrop : "You haven't written the dropping reason for this anime.";
+                string userDropReasonTextBox = condition ? userInputTextDrop : "";
 
-                string userDropReasonTextBlock = condition ? userDropReason : "You haven't written the dropping reason for this anime.";
-                string userDropReasonTextBox = condition ? userDropReason : "";
-
-                Run addDropReason = new Run(" Change") { Foreground = Brushes.Blue };
-                addDropReason.MouseLeftButtonDown += (s, e) => { ShowUserInputPane("Your dropping reason: ", Visibility.Collapsed, this); };
-
-                TextBlock dropReason = new TextBlock()
-                {
-                    TextWrapping = TextWrapping.Wrap,
-                    TextTrimming = TextTrimming.WordEllipsis
-                };
-                dropReason.Inlines.Add(new Bold(new Run("Dropping reason: ")));
-                dropReason.Inlines.Add(new Run(userDropReason));
-                dropReason.Inlines.Add(addDropReason);
-                userInputTextBox.Text = userDropReasonTextBox;
-
-                sp.Children.Add(dropReason);
+                sp.Children.Insert(0, SetUserReviewText("Dropping reason: ", userDropReasonTextBlock, SetAddChange("Your dropping reason: ", false, Visibility.Collapsed)));
             }
             sp.Children.Add(SetSynopsisText((string)(animeEntryXML.Element("synopsis"))));
             sp.Children.Add(SetAdditionalAnimeInfo("English: ", (string)(animeEntryXML.Element("english"))));
@@ -285,11 +273,17 @@ namespace DesktopWeeabo
                 Height = 25,
                 Width = 90
             };
-            cb.Items.Add(SetComboBoxItem("To Watch"));
-            cb.Items.Add(SetComboBoxItem("Watched"));
-            cb.Items.Add(SetComboBoxItem("Watching"));
-            cb.Items.Add(SetComboBoxItem("Dropped"));
-            if (view != -1) { cb.SelectedIndex = view; }
+            cb.Items.Add(SetComboBoxItem(viewingStatuses[0]));
+            cb.Items.Add(SetComboBoxItem(viewingStatuses[1]));
+            cb.Items.Add(SetComboBoxItem(viewingStatuses[2]));
+            cb.Items.Add(SetComboBoxItem(viewingStatuses[3]));
+            if (view != -1) {
+                cb.Items.Add(SetComboBoxItem("Remove"));
+                wasEventFiredBySystem = true;
+                cb.SelectedIndex = view;
+                wasEventFiredBySystem = false;
+            }
+            cb.MouseWheel += ComboBox_MouseWheel;
             cb.SelectionChanged += StatusComboBox_SelectionChanged;
             return cb;
         }
@@ -316,8 +310,8 @@ namespace DesktopWeeabo
                 Width = 90
             };
             sp.Children.Add(SetComboBoxLabel());
-            sp.Children.Add(statusComboBox);
-            sp.Children.Add(showMoreText);
+            sp.Children.Add(SetStatusComboBox());
+            sp.Children.Add(SetShowMoreText());
             return sp;
         }
 
@@ -326,65 +320,48 @@ namespace DesktopWeeabo
             Grid g = new Grid() { VerticalAlignment = VerticalAlignment.Top };
             g.Children.Add(SetCoverImage((string)(animeEntryXML.Element("image"))));
             g.Children.Add(SetAnimeTitle((string)(animeEntryXML.Element("title"))));
-            g.Children.Add(userInputStackPanel);
-            g.Children.Add(middleStackPanel);
+            g.Children.Add(SetMiddleStackPanel());
             g.Children.Add(SetRightStackPanel());
 
             return g;
         }
 
         private void UserInputCancel_Click(object sender, RoutedEventArgs e) {
-            userInputTitle.Inlines.Clear();
-            userInputStackPanel.Visibility = Visibility.Collapsed;
-            middleStackPanel.Visibility = Visibility.Visible;
-            showMoreText.Visibility = Visibility.Visible;
+            TextBlock showMore = (grid.Children[3] as StackPanel).Children[2] as TextBlock;
+            ComboBox statusComboBox = (grid.Children[3] as StackPanel).Children[1] as ComboBox;
+            showMore.Visibility = Visibility.Visible;
+            grid.Children.RemoveAt(2);
+            grid.Children.Insert(2, SetMiddleStackPanel());
             statusComboBox.IsEnabled = true;
             wasEventFiredBySystem = true;
             statusComboBox.SelectedIndex = view;
             wasEventFiredBySystem = false;
-            ExpandListItem(this);
+            if (isListBoxItemExpanded) { ExpandListItem(this); }
         }
 
         private void UserInputConfirm_Click(object sender, RoutedEventArgs e)
         {
+            ComboBox statusComboBox = (grid.Children[3] as StackPanel).Children[1] as ComboBox;
+            TextBox userInputTextBox = ((grid.Children[2] as StackPanel).Children[1] as TextBox);
+            TextBox userScoreInputTextBox = ((grid.Children[2] as StackPanel).Children[2] as StackPanel).Children[1] as TextBox;
             int selectedComboBoxItemIndex = statusComboBox.Items.IndexOf(statusComboBox.SelectedItem);
-            string viewingStatus = (string)(statusComboBox.SelectedItem as ComboBoxItem).Content;
-            string userInput = userInputTextBox.Text;
-
-            if (selectedComboBoxItemIndex == 1)
-            {
-                double userScore = double.NaN;
-                int scoreInputLen = userInputPersonalScoreInput.Text.Length;
-                bool isDouble = scoreInputLen > 0 ? Double.TryParse(userInputPersonalScoreInput.Text, out userScore) : true;
-                if (!isDouble)
-                {
-                    userInputPersonalScoreInputError.Visibility = Visibility.Visible;
-                    return;
-                }
-                else
-                {
-                    if ((userScore != userScore) || (userScore >= 0 && userScore <= 10))
-                    {
-                        ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatus, userInput, userScore != userScore ? "" : userScore.ToString(), "");
-                    }
-                    else
-                    {
-                        userInputPersonalScoreInputError.Visibility = Visibility.Visible;
-                        return;
-                    }
-                }
+            string viewingStatusString = (string)(statusComboBox.SelectedItem as ComboBoxItem).Content;
+            userScoreInputText = "";
+            if (selectedComboBoxItemIndex == 1) {
+                userInputTextReview = userInputTextBox.Text.Length > 0 ? userInputTextBox.Text : "";
+                userScoreInputText = userScoreInputTextBox.Text.Length > 0 ? userScoreInputTextBox.Text : "";
+                ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatusString, userInputTextReview, userScoreInputText);
             }
             else if (selectedComboBoxItemIndex == 3)
             {
-                ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatus, "", "", userInput);
+                userInputTextDrop = userInputTextBox.Text.Length > 0 ? userInputTextBox.Text : "";
+                ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatusString, "", "", userInputTextDrop);
             }
-
-            if (listBoxItemRemovalAllowance && view != 1 && view != 3)
-            {
+            if (listBoxItemRemovalAllowance && ((view != 1 && selectedComboBoxItemIndex == 1) || (view != 3 && selectedComboBoxItemIndex == 3))) {
                 listbox.Items.Remove(this);
-            }
-            else if (!listBoxItemRemovalAllowance || view == 1 || view == 3)
-            {
+            } else {
+                ReloadViewAndGrid(selectedComboBoxItemIndex, 3);
+                view = selectedComboBoxItemIndex;
                 UserInputCancel_Click(new object(), new RoutedEventArgs());
             }
         }
@@ -393,27 +370,101 @@ namespace DesktopWeeabo
         {
             if (!wasEventFiredBySystem)
             {
-                ComboBoxItem cbi = (sender as ComboBox).SelectedItem as ComboBoxItem;
+                ComboBox statusComboBox = sender as ComboBox;
+                ComboBoxItem cbi = statusComboBox.SelectedItem as ComboBoxItem;
                 string viewingStatus = (string)cbi.Content;
-                int viewingStatusInt = statusComboBox.Items.IndexOf(statusComboBox.SelectedItem);
-                if (viewingStatusInt == 1 || viewingStatusInt == 3)
+                int selectedViewingStatusInt = statusComboBox.Items.IndexOf(statusComboBox.SelectedItem);
+                switch (selectedViewingStatusInt)
                 {
-                    if (viewingStatusInt == 1)
-                    {
-                        ShowUserInputPane("Your personal review: ", Visibility.Visible, this);
-                    }
-                    else if (viewingStatusInt == 3)
-                    {
-                        ShowUserInputPane("Your dropping reason: ", Visibility.Collapsed, this);
-                    }
+                    case 1:
+                        
+                        if (userInputTextReview.Length > 0 || userScoreInputText.Length > 0)
+                        {
+                            if (listBoxItemRemovalAllowance)
+                            {
+                                listbox.Items.Remove(this);
+                            }
+                            else
+                            {
+                                ReloadViewAndGrid(selectedViewingStatusInt, 2);
+                                ReloadViewAndGrid(selectedViewingStatusInt, 3);
+                            }
+                            ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatus);
+                        }
+                        else
+                        {
+                            ShowUserInputPane("Your personal review: ", true, this);
+                        }
+                        break;
+                    case 3:
+                        if (userInputTextDrop.Length > 0)
+                        {
+                            if (listBoxItemRemovalAllowance)
+                            {
+                                listbox.Items.Remove(this);
+                            }
+                            else
+                            {
+                                ReloadViewAndGrid(selectedViewingStatusInt, 2);
+                                ReloadViewAndGrid(selectedViewingStatusInt, 3);
+                            }
+                            ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatus);
+                        }
+                        else
+                        {
+                            ShowUserInputPane("Your dropping reason: ", false, this);
+                        }
+
+                        break;
+                    case 4:
+                        if (!listBoxItemRemovalAllowance)
+                        {
+                            ReloadViewAndGrid(-1, 2);
+                            ReloadViewAndGrid(-1, 3);
+                        }
+                        else
+                        {
+                            listbox.Items.Remove(this);
+                            if (listbox.Items.Count == 0)
+                            {
+                                listbox.Items.Add(new NotifitacationMessagesForListBox(listbox.ActualHeight, "You have not listed any animes as '" + viewingStatuses[view] + "'."));
+                            }
+                        }
+                        ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatus, "", "", "", true);
+
+                        break;
+                    default:
+                        if (listBoxItemRemovalAllowance)
+                        {
+                            listbox.Items.Remove(this);
+                        }
+                        else
+                        {
+                            ReloadViewAndGrid(selectedViewingStatusInt, 2);
+                            ReloadViewAndGrid(selectedViewingStatusInt, 3);
+                        }
+                        ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatus);
+                        break;
                 }
-                else
-                {
-                    ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatus, "", "", "");
-                    if (listBoxItemRemovalAllowance) { listbox.Items.Remove(this); }
-                }
-                //var listBoxItem = VisualTreeHelper.GetParent(VisualTreeHelper.GetParent(cbox) as Grid) as ListBoxItem;
-                //System.Diagnostics.Debug.WriteLine();
+            }
+        }
+
+        private void KeyUp_UserScoreInputTextBox(object sender, EventArgs e)
+        {
+            TextBox scoreInputTextBox = sender as TextBox;
+            Button confirmButton = ((grid.Children[2] as StackPanel).Children[3] as StackPanel).Children[0] as Button;
+            TextBlock userInputPersonalScoreInputError = ((grid.Children[2] as StackPanel).Children[2] as StackPanel).Children[2] as TextBlock;
+            bool isDouble = double.TryParse(scoreInputTextBox.Text, out double score);
+
+            if ((!isDouble && scoreInputTextBox.Text.Length > 0) || !(score >= 0 && score <= 10))
+            {
+                confirmButton.IsEnabled = false;
+                userInputPersonalScoreInputError.Visibility = Visibility.Visible;
+            }
+            else if(isDouble || scoreInputTextBox.Text.Length == 0)
+            {
+                confirmButton.IsEnabled = true;
+                userInputPersonalScoreInputError.Visibility = Visibility.Hidden;
             }
         }
 
@@ -434,39 +485,54 @@ namespace DesktopWeeabo
 
         private static void ExpandListItem(ListBoxItemForAnime instance)
         {
+            TextBlock showMore = (instance.grid.Children[3] as StackPanel).Children[2] as TextBlock;
             if (instance.isListBoxItemExpanded == false)
             {
                 instance.Height = double.NaN;
-                instance.showMoreText.Text = "Show less";
+                showMore.Text = "Show less";
                 instance.isListBoxItemExpanded = true;
             }
             else
             {
                 instance.Height = 120;
-                instance.showMoreText.Text = "Show more";
+                showMore.Text = "Show more";
                 instance.isListBoxItemExpanded = false;
             }
         }
 
-        private static void ShowUserInputPane(string title, Visibility visibility, ListBoxItemForAnime instance)
+        private static void ShowUserInputPane(string headline, bool showScore, ListBoxItemForAnime instance)
         {
-            instance.userInputTitle.Inlines.Add(new Bold(new Run(title)));
-            instance.userInputTitle.Inlines.Add(new Run("(you can leave it empty)"));
-            instance.userInputPersonalScore.Visibility = visibility;
-            instance.userInputStackPanel.Visibility = Visibility.Visible;
-            instance.middleStackPanel.Visibility = Visibility.Collapsed;
-            instance.showMoreText.Visibility = Visibility.Hidden;
-            instance.statusComboBox.IsEnabled = false;
+            ComboBox statusComboBox = (instance.grid.Children[3] as StackPanel).Children[1] as ComboBox;
+            TextBlock showMore = ((instance.grid.Children[3] as StackPanel).Children[2] as TextBlock);
+            statusComboBox.IsEnabled = false;
+            showMore.Visibility = Visibility.Hidden;
+            instance.grid.Children.RemoveAt(2);
+            instance.grid.Children.Insert(2, instance.SetUserInputStackPanel(headline, showScore));
 
-            if (instance.isListBoxItemExpanded)
+            if (!instance.isListBoxItemExpanded)
             {
                 ExpandListItem(instance);
             }
-            else
+        }
+
+        private void ReloadViewAndGrid(int newView, int whichPanel)
+        {
+            view = newView;
+            grid.Children.RemoveAt(whichPanel);
+
+            if (whichPanel == 2)
             {
-                ExpandListItem(instance);
-                instance.isListBoxItemExpanded = false;
+                grid.Children.Insert(2, SetMiddleStackPanel());
             }
+            else if(whichPanel == 3)
+            {
+                grid.Children.Insert(3, SetRightStackPanel());
+            }            
+        }
+
+        void ComboBox_MouseWheel(object sender, MouseEventArgs e)
+        {
+            e.Handled = true;
         }
     }
 }
