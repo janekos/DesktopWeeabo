@@ -9,7 +9,7 @@
     <Grid>
         <TextBlock HorizontalAlignment="Left" Margin="0,3,0,0" TextWrapping="Wrap" Text="Search watched animes:" VerticalAlignment="Top"/>
         <TextBox Height="23" TextChanged="Search_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" BorderBrush="#FFAA1616" Foreground="Black" Margin="131,0,0,0"/>
-        <ListBox Name="listBox" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch" Margin="0,50,0,0" BorderBrush="#FFFF005D" HorizontalContentAlignment="Stretch" Loaded="Load_animes"/>
+        <ListBox Name="listBox" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch" Margin="0,45,0,5" BorderBrush="#FFFF005D" HorizontalContentAlignment="Stretch" Loaded="Load_animes"/>
         <TextBlock HorizontalAlignment="Left" Margin="0,28,0,0" TextWrapping="Wrap" Text="Sort by: " VerticalAlignment="Top" TextAlignment="Center" Height="23"/>
         <ComboBox HorizontalAlignment="Left" Margin="49,28,0,0" VerticalAlignment="Top" Width="123" Height="17"/>
     </Grid>

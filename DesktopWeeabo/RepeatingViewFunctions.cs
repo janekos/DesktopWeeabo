@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Threading;
 using System.Xml.Linq;
 
@@ -25,14 +27,8 @@ namespace DesktopWeeabo
 
                 typingTimer.Tick += (s, args) => {
                     typingTimer.Stop();
-                    if (tb.Text.Length > 0)
-                    {
-                        BuildListBoxItems(listBox, tb.Text.ToLower(), view);
-                    }
-                    else
-                    {
-                        BuildListBoxItems(listBox, "", view);
-                    }
+                    if (tb.Text.Length > 0){ BuildListBoxItems(listBox, tb.Text.ToLower(), view); }
+                    else { BuildListBoxItems(listBox, "", view); }
                 };
             }
             typingTimer.Stop();

@@ -20,9 +20,10 @@ namespace DesktopWeeabo
         private XElement animeEntryXML;
         private ListBox listbox;
         private int view;
-        private string userInputTextReview, userInputTextDrop, userScoreInputText;
+        private string userInputTextReview, userInputTextDrop, userScoreInputText, currEpisode;
         private Grid grid;
         private string[] viewingStatuses = { "To Watch", "Watched", "Watching", "Dropped" };
+        private DispatcherTimer currEpisodeErrorDispatcherTimer, currEpisodeSaveDispatcherTimer;
 
         public ListBoxItemForAnime(XElement _e, ListBox _listbox, int _view, bool _listBoxItemRemovalAllowance)
         {
@@ -34,13 +35,16 @@ namespace DesktopWeeabo
             userInputTextReview = animeEntryXML.Element("review") != null ? (string)(animeEntryXML.Element("review")) : "";
             userScoreInputText = animeEntryXML.Element("personalscore") != null ? (string)(animeEntryXML.Element("personalscore")) : "";
             userInputTextDrop = animeEntryXML.Element("dropreason") != null ? (string)(animeEntryXML.Element("dropreason")) : "";
+            currEpisode = animeEntryXML.Element("currepisode") != null ? (string)(animeEntryXML.Element("currepisode")) : "";
 
             grid = SetGrid();
 
-            Height = 120;
+            if (view == 2) { SetDispatcherTimers(); }
+
+            Height = 140;
             Focusable = false;
             BorderThickness = new Thickness(0, 0, 0, 0.5);
-            BorderBrush = Brushes.Black;
+            BorderBrush = Brushes.Red;
             Content = grid;
         }
 
@@ -49,8 +53,8 @@ namespace DesktopWeeabo
             return new Image()
             {
                 Source = new BitmapImage(new Uri(imgUrl)),
-                Height = 100,
-                Width = 80,
+                Height = 120,
+                Width = 100,
                 Margin = new Thickness(10, 10, 0, 10),
                 VerticalAlignment = VerticalAlignment.Top,
                 HorizontalAlignment = HorizontalAlignment.Left
@@ -63,7 +67,7 @@ namespace DesktopWeeabo
                 FontWeight = FontWeights.Bold,
                 Text = title,
                 TextTrimming = TextTrimming.WordEllipsis,
-                Margin = new Thickness(95, 10, 110, 10)
+                Margin = new Thickness(105, 10, 110, 10)
             };
         }
 
@@ -159,7 +163,7 @@ namespace DesktopWeeabo
         private StackPanel SetUserInputStackPanel(string title, bool showScore) {
             StackPanel sp = new StackPanel()
             {
-                Margin = new Thickness(95, 30, 110, 10)
+                Margin = new Thickness(105, 30, 110, 10)
             };
             sp.Children.Add(SetUserInputTitle(title));
             sp.Children.Add(SetUserInputTextBox(showScore));
@@ -219,7 +223,7 @@ namespace DesktopWeeabo
 
         private StackPanel SetMiddleStackPanel()
         {
-            StackPanel sp = new StackPanel() { Margin = new Thickness(95, 30, 110, 10) };
+            StackPanel sp = new StackPanel() { Margin = new Thickness(105, 30, 110, 10) };
 
             if (view == 1)
             {
@@ -271,8 +275,12 @@ namespace DesktopWeeabo
             {
                 HorizontalAlignment = HorizontalAlignment.Left,
                 Height = 25,
-                Width = 90
+                Width = 90,
+                Margin = new Thickness(0,0,0,10),
+                BorderBrush = Brushes.Red,
+                Background = Brushes.White
             };
+            cb.Resources.Add(SystemColors.HighlightBrushKey, Brushes.Red);
             cb.Items.Add(SetComboBoxItem(viewingStatuses[0]));
             cb.Items.Add(SetComboBoxItem(viewingStatuses[1]));
             cb.Items.Add(SetComboBoxItem(viewingStatuses[2]));
@@ -288,14 +296,53 @@ namespace DesktopWeeabo
             return cb;
         }
 
+        private TextBlock SetCurrEpisodeTitle()
+        {
+            return new TextBlock()
+            {
+                Margin = new Thickness(0, 0, 0, 4),
+                FontWeight = FontWeights.Bold,
+                Text = "Current episode:"
+            };
+        }
+
+        private TextBox SetCurrEpisodeTextBox(string text)
+        {
+            TextBox tb =  new TextBox()
+            {
+                Margin = new Thickness(0, 0, 0, 10),
+                Width = 40,
+                BorderBrush = Brushes.Red,
+                Text = text
+            };
+            tb.TextChanged += TextChanged_CurrEpisodeTextBox;
+            tb.LostFocus += LostFocus_CurrEpisodeTextBox;
+            return tb;
+        }
+
+        private Label SetCurrEpisodeErrMsg()
+        {
+            return new Label
+            {
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Top,
+                Margin = new Thickness(0, 84, 78, 0),
+                Height = 22,
+                Background = Brushes.White,
+                BorderBrush = Brushes.Red,
+                BorderThickness = new Thickness(1),
+                Visibility = Visibility.Collapsed,
+                Padding = new Thickness(3,1,3,1)
+            };
+        }
+
         private TextBlock SetShowMoreText() {
             TextBlock tb = new TextBlock()
             {
                 VerticalAlignment = VerticalAlignment.Bottom,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Foreground = Brushes.Blue,
-                Text = "Show more",
-                Margin = new Thickness(0, 37, 0, 0)
+                Text = "Show more"
             };
             tb.MouseLeftButtonDown += (s, e) => { ExpandListItem(this); };
             return tb;
@@ -311,6 +358,11 @@ namespace DesktopWeeabo
             };
             sp.Children.Add(SetComboBoxLabel());
             sp.Children.Add(SetStatusComboBox());
+            if (view == 2)
+            {
+                sp.Children.Add(SetCurrEpisodeTitle());
+                sp.Children.Add(SetCurrEpisodeTextBox(currEpisode.Length > 0 ? currEpisode : "0"));
+            }
             sp.Children.Add(SetShowMoreText());
             return sp;
         }
@@ -322,8 +374,31 @@ namespace DesktopWeeabo
             g.Children.Add(SetAnimeTitle((string)(animeEntryXML.Element("title"))));
             g.Children.Add(SetMiddleStackPanel());
             g.Children.Add(SetRightStackPanel());
+            if(view == 2) { g.Children.Add(SetCurrEpisodeErrMsg()); }            
 
             return g;
+        }
+
+        private void SetDispatcherTimers()
+        {
+            Label toast = grid.Children[4] as Label;
+            TextBox currEpisodeFromTb = (grid.Children[3] as StackPanel).Children[3] as TextBox;
+
+            currEpisodeErrorDispatcherTimer = new DispatcherTimer();
+            currEpisodeErrorDispatcherTimer.Interval = TimeSpan.FromMilliseconds(3000);
+            currEpisodeErrorDispatcherTimer.Tick += (o, s) =>
+            {
+                currEpisodeErrorDispatcherTimer.Stop();
+                toast.Visibility = Visibility.Collapsed;
+            };
+
+            currEpisodeSaveDispatcherTimer = new DispatcherTimer();
+            currEpisodeSaveDispatcherTimer.Interval = TimeSpan.FromMilliseconds(500);
+            currEpisodeSaveDispatcherTimer.Tick += (o, s) =>
+            {
+                currEpisodeSaveDispatcherTimer.Stop();
+                ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatuses[2], "", "", "", currEpisodeFromTb.Text.ToString());
+            };
         }
 
         private void UserInputCancel_Click(object sender, RoutedEventArgs e) {
@@ -430,7 +505,7 @@ namespace DesktopWeeabo
                                 listbox.Items.Add(new NotifitacationMessagesForListBox(listbox.ActualHeight, "You have not listed any animes as '" + viewingStatuses[view] + "'."));
                             }
                         }
-                        ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatus, "", "", "", true);
+                        ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatus, "", "", "", "",true);
 
                         break;
                     default:
@@ -468,6 +543,44 @@ namespace DesktopWeeabo
             }
         }
 
+        private void TextChanged_CurrEpisodeTextBox(object sender, EventArgs ea)
+        {
+            TextBox currEpisodeTextBox = sender as TextBox;
+            int maxEpisode = int.Parse(animeEntryXML.Element("episodes").Value);
+            Label toast = grid.Children[4] as Label;
+
+            bool isInt = int.TryParse(currEpisodeTextBox.Text, out int currEpisodeFromTb);
+
+            if ((isInt && (currEpisodeFromTb <= maxEpisode)) || currEpisodeTextBox.Text.Length == 0)
+            {
+                    currEpisodeSaveDispatcherTimer.Stop();
+                    currEpisodeSaveDispatcherTimer.Start();
+            }
+            else if (currEpisodeTextBox.Text.Length > 0)
+            {                
+                if (!isInt)
+                {
+                    toast.Content = "Only numbers are allowed";
+                }
+                else if (currEpisodeFromTb >= maxEpisode)
+                {
+                    toast.Content = $"This anime has only {maxEpisode} episodes";
+                }
+                if(toast.Visibility != Visibility.Visible)
+                {
+                    toast.Visibility = Visibility.Visible;
+                    currEpisodeErrorDispatcherTimer.Stop();
+                    currEpisodeErrorDispatcherTimer.Start();
+                }                
+            }
+        }
+
+        private void LostFocus_CurrEpisodeTextBox(object sender, RoutedEventArgs e)
+        {
+            Label toast = grid.Children[4] as Label;
+            if (toast.Visibility != Visibility.Collapsed) { toast.Visibility = Visibility.Collapsed; }
+        }
+
         private static string CleanSynopsisText(string text)
         {
             text = text.Replace("<br />", " ");
@@ -485,7 +598,8 @@ namespace DesktopWeeabo
 
         private static void ExpandListItem(ListBoxItemForAnime instance)
         {
-            TextBlock showMore = (instance.grid.Children[3] as StackPanel).Children[2] as TextBlock;
+            StackPanel rightStackPanel = instance.grid.Children[3] as StackPanel;
+            TextBlock showMore = instance.view == 2 ? rightStackPanel.Children[4] as TextBlock : rightStackPanel.Children[2] as TextBlock;
             if (instance.isListBoxItemExpanded == false)
             {
                 instance.Height = double.NaN;
@@ -494,7 +608,7 @@ namespace DesktopWeeabo
             }
             else
             {
-                instance.Height = 120;
+                instance.Height = 140;
                 showMore.Text = "Show more";
                 instance.isListBoxItemExpanded = false;
             }

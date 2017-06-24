@@ -20,14 +20,12 @@ using System.Xml.Linq;
 
 namespace DesktopWeeabo
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
+            ItemHandler.CreateBackUp();
             this.DataContext = new NavigationViewModel();
             Search.Background = Brushes.LightBlue;
         }
@@ -39,6 +37,8 @@ namespace DesktopWeeabo
             Dropped.Background = Brushes.White;
             Search.Background = Brushes.White;
             Watched.Background = Brushes.White;
+            Settings.Background = Brushes.White;
+            About.Background = Brushes.White;
             var selected = sender as Button;
             selected.Background = Brushes.LightBlue;
         }

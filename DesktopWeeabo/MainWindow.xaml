@@ -39,6 +39,8 @@
             <Button Name="Watched" Content="WATCHED" HorizontalAlignment="Left" Margin="10,64,0,0" VerticalAlignment="Top" Width="90" Background="White" BorderBrush="{x:Null}" Command="{Binding WatchedCommand}" Click="SelectedButton"/>
             <Button Name="Watching" Content="WATCHING" HorizontalAlignment="Left" Margin="10,91,0,0" VerticalAlignment="Top" Width="90" Background="White" BorderBrush="{x:Null}" Command="{Binding WatchingCommand}" Click="SelectedButton"/>
             <Button Name="Dropped" Content="DROPPED" HorizontalAlignment="Left" Margin="10,118,0,0" VerticalAlignment="Top" Width="90" Background="White" BorderBrush="{x:Null}" Command="{Binding DroppedCommand}" Click="SelectedButton"/>
+            <Button Name="Settings" Content="SETTINGS" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="90" Background="White" BorderBrush="{x:Null}" Command="{Binding SettingsCommand}" Click="SelectedButton" Margin="10,0,0,37"/>
+            <Button Name="About" Content="ABOUT" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="90" Background="White" BorderBrush="{x:Null}" Command="{Binding AboutCommand}" Click="SelectedButton" Margin="10,0,0,10"/>
         </Grid>
         <ContentControl x:Name="Pages" Content="{Binding SelectedViewModel}" Margin="125,10,10,10"/>
     </Grid>

@@ -26,6 +26,8 @@ namespace DesktopWeeabo
         public SearchView()
         {
             InitializeComponent();
+            listBox.Items.Clear();
+            listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "Try searching for something above."));
         }
 
         private void Search_TextChanged(object sender, EventArgs e)

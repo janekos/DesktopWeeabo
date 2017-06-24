@@ -40,17 +40,9 @@ namespace DesktopWeeabo
 
         public static XDocument MakeLocalSearch(string query, string viewingStatus = "")
         {
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-                CreateSaveFile();
-            }
-            if (!File.Exists(path + "/entries.xml"))
-            {
-                CreateSaveFile();
-            }
+            CheckAndCreateDirAndFile();
 
-            XDocument doc = XDocument.Load(path + "/entries.xml");
+            XDocument doc = XDocument.Load(path + "/MainEntries.xml");
             XDocument result = new XDocument(new XElement("anime"));
             int queryLen = query.Length;
             int viewingStatusLen = viewingStatus.Length;
@@ -86,19 +78,11 @@ namespace DesktopWeeabo
             return result;
         }
 
-        public static void UpdateSaveFile(XElement itemToModify, string viewingStatus, string userReview = "", string userScore="", string userDropReason="", bool remove = false)
+        public static void UpdateSaveFile(XElement itemToModify, string viewingStatus, string userReview = "", string userScore="", string userDropReason="", string currEpisode="", bool remove = false)
         {
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-                CreateSaveFile();
-            }
-            if (!File.Exists(path + "/entries.xml"))
-            {
-                CreateSaveFile();
-            }
+            CheckAndCreateDirAndFile();
 
-            XDocument doc = XDocument.Load(path + "/entries.xml");
+            XDocument doc = XDocument.Load(path + "/MainEntries.xml");
             Boolean entryExists = false;
             
             foreach (var e in doc.Descendants("entry"))
@@ -112,9 +96,10 @@ namespace DesktopWeeabo
                     else
                     {
                         e.Element("viewingstatus").Value = viewingStatus;
-                        if (userReview.Length > 0) { e.Element("review").Value = userReview; }
-                        if (userScore.Length > 0) { e.Element("personalscore").Value = userScore; }
-                        if (userDropReason.Length > 0) { e.Element("dropreason").Value = userDropReason; }
+                        e.Element("review").Value = userReview.Length > 0 ? userReview: "";
+                        e.Element("personalscore").Value = userScore.Length > 0 ? userScore : "";
+                        e.Element("dropreason").Value = userDropReason.Length > 0 ? userDropReason : "";
+                        e.Element("currepisode").Value = currEpisode.Length > 0 ? currEpisode : "";
                     }                    
                     entryExists = true;
 
@@ -128,18 +113,41 @@ namespace DesktopWeeabo
                     new XElement("viewingstatus", viewingStatus),
                     new XElement("review", userReview),
                     new XElement("personalscore", userScore),
-                    new XElement("dropreason", userDropReason)
+                    new XElement("dropreason", userDropReason),
+                    new XElement("currepisode", currEpisode)
                 );
                 doc.Root.Add(itemToModify);
             }
 
-            doc.Save(path + "/entries.xml");
+            doc.Save(path + "/MainEntries.xml");
+        }        
+
+        public static void CreateBackUp()
+        {
+            if (File.Exists(path + "/MainEntries.xml"))
+            {
+                if (!Directory.Exists(path+"/BackUp")) { Directory.CreateDirectory(path+ "/BackUp"); }
+                File.Copy(path + "/MainEntries.xml", path + "/BackUp/MainEntries" + DateTime.Now.ToString("_dd_MM_yyyy") + ".xml", true);
+            }
         }
 
-        public static void CreateSaveFile()
+        private static void CheckAndCreateDirAndFile()
         {
-            XDocument doc = new XDocument( new XElement("anime"));
-            doc.Save(path + "/entries.xml");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+                CreateSaveFile();
+            }
+            if (!File.Exists(path + "/MainEntries.xml"))
+            {
+                CreateSaveFile();
+            }
+        }
+
+        private static void CreateSaveFile()
+        {
+            XDocument doc = new XDocument(new XElement("anime"));
+            doc.Save(path + "/MainEntries.xml");
         }
     }
 }

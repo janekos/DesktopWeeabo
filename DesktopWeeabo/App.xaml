@@ -6,7 +6,8 @@
     <Application.Resources>
         <Style TargetType="{x:Type ListBoxItem}">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="Pink" />
         </Style>
     </Application.Resources>    
 </Application>
