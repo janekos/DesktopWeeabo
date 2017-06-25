@@ -9,6 +9,20 @@
     <Grid>
         <TextBlock HorizontalAlignment="Left" Margin="0,3,0,0" TextWrapping="Wrap" Text="Search watched animes:" VerticalAlignment="Top"/>
         <TextBox Height="23" TextChanged="Search_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" BorderBrush="#FFAA1616" Foreground="Black" Margin="131,0,0,0"/>
-        <ListBox Name="listBox" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch" Margin="0,28,0,0" BorderBrush="#FFFF005D" HorizontalContentAlignment="Stretch" Loaded="Load_animes"/>
+        <ListBox Name="listBox" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch" Margin="0,52,0,5" BorderBrush="#FFFF005D" HorizontalContentAlignment="Stretch"/>
+        <TextBlock HorizontalAlignment="Left" Margin="0,28,0,0" TextWrapping="Wrap" Text="Sort by: " VerticalAlignment="Top" TextAlignment="Center" Height="23"/>
+        <ComboBox Name="orderByComboBox" HorizontalAlignment="Left" Margin="49,24,0,0" VerticalAlignment="Top" Width="100" Height="23" SelectionChanged="SortByComboBox_SelectionChanged">
+            <ComboBoxItem Content="Title" HorizontalAlignment="Left" Width="100"/>
+            <ComboBoxItem Content="English" HorizontalAlignment="Left" Width="100"/>
+            <ComboBoxItem Content="Synonyms" HorizontalAlignment="Left" Width="100"/>
+            <ComboBoxItem Content="Episodes" HorizontalAlignment="Left" Width="100"/>
+            <ComboBoxItem Content="Score" HorizontalAlignment="Left" Width="100"/>
+            <ComboBoxItem Content="Type" HorizontalAlignment="Left" Width="100"/>
+            <ComboBoxItem Content="Status" HorizontalAlignment="Left" Width="100"/>
+            <ComboBoxItem Content="Start date" HorizontalAlignment="Left" Width="100"/>
+            <ComboBoxItem Content="End date" HorizontalAlignment="Left" Width="100"/>
+            <ComboBoxItem Content="Personal score" HorizontalAlignment="Left" Width="100"/>
+        </ComboBox>
+        <CheckBox Name="descendingOrderByCheckBox" Content="Descending" HorizontalAlignment="Left" Margin="154,28,0,0" VerticalAlignment="Top" FlowDirection="RightToLeft" Checked="CheckBoxChanged" Unchecked="CheckBoxChanged" RenderTransformOrigin="1.266,0.562"/>
     </Grid>
 </UserControl>

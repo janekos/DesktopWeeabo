@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -33,7 +29,7 @@ namespace DesktopWeeabo
             animeEntryXML = _e;
 
             userInputTextReview = animeEntryXML.Element("review") != null ? (string)(animeEntryXML.Element("review")) : "";
-            userScoreInputText = animeEntryXML.Element("personalscore") != null ? (string)(animeEntryXML.Element("personalscore")) : "";
+            userScoreInputText = animeEntryXML.Element("personal_score") != null ? (string)(animeEntryXML.Element("personal_score")) : "";
             userInputTextDrop = animeEntryXML.Element("dropreason") != null ? (string)(animeEntryXML.Element("dropreason")) : "";
             currEpisode = animeEntryXML.Element("currepisode") != null ? (string)(animeEntryXML.Element("currepisode")) : "";
 
@@ -54,7 +50,7 @@ namespace DesktopWeeabo
             {
                 Source = new BitmapImage(new Uri(imgUrl)),
                 Height = 120,
-                Width = 100,
+                Width = 80,
                 Margin = new Thickness(10, 10, 0, 10),
                 VerticalAlignment = VerticalAlignment.Top,
                 HorizontalAlignment = HorizontalAlignment.Left
@@ -592,6 +588,8 @@ namespace DesktopWeeabo
             text = text.Replace("\n", " ");
             text = text.Replace("&mdash;", "-");
             text = text.Replace("&rsquo;", "'");
+            text = text.Replace("<em>", "");
+            text = text.Replace("</em>", "");
 
             return text;
         }

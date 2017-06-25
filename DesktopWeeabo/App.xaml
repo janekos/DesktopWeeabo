@@ -4,10 +4,14 @@
              xmlns:local="clr-namespace:DesktopWeeabo"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <Style TargetType="{x:Type ListBoxItem}">
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="VerticalContentAlignment" Value="Stretch" />
-            <Setter Property="Background" Value="Pink" />
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="BorderBrush" Value="Red" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style TargetType="{x:Type ComboBox}">
+            <Setter Property="BorderBrush" Value="Red" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="White" />
         </Style>
     </Application.Resources>    
 </Application>

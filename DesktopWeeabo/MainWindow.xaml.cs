@@ -25,8 +25,9 @@ namespace DesktopWeeabo
         public MainWindow()
         {
             InitializeComponent();
-            ItemHandler.CreateBackUp();
-            this.DataContext = new NavigationViewModel();
+            ItemHandler.ManageSettings();
+            DataContext = new NavigationViewModel();
+            System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
             Search.Background = Brushes.LightBlue;
         }
 
@@ -41,6 +42,11 @@ namespace DesktopWeeabo
             About.Background = Brushes.White;
             var selected = sender as Button;
             selected.Background = Brushes.LightBlue;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            ItemHandler.CreateBackUp();
         }
     }
 }

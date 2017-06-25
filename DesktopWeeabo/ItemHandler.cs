@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Xml;
 using System.Xml.Linq;
 
 namespace DesktopWeeabo
@@ -97,7 +94,7 @@ namespace DesktopWeeabo
                     {
                         e.Element("viewingstatus").Value = viewingStatus;
                         e.Element("review").Value = userReview.Length > 0 ? userReview: "";
-                        e.Element("personalscore").Value = userScore.Length > 0 ? userScore : "";
+                        e.Element("personal_score").Value = userScore.Length > 0 ? userScore : "";
                         e.Element("dropreason").Value = userDropReason.Length > 0 ? userDropReason : "";
                         e.Element("currepisode").Value = currEpisode.Length > 0 ? currEpisode : "";
                     }                    
@@ -112,7 +109,7 @@ namespace DesktopWeeabo
                 itemToModify.Add(
                     new XElement("viewingstatus", viewingStatus),
                     new XElement("review", userReview),
-                    new XElement("personalscore", userScore),
+                    new XElement("personal_score", userScore),
                     new XElement("dropreason", userDropReason),
                     new XElement("currepisode", currEpisode)
                 );
@@ -131,23 +128,57 @@ namespace DesktopWeeabo
             }
         }
 
-        private static void CheckAndCreateDirAndFile()
+        public static XDocument ManageSettings(string backUp = "", string view = "", string orderBy = "", string descendingOrderBy = "")
         {
-            if (!Directory.Exists(path))
+            CheckAndCreateDirAndFile();
+
+            XDocument settings = XDocument.Load(path + "/Config.xml");
+            if (!settings.Root.Elements().Any())
             {
-                Directory.CreateDirectory(path);
-                CreateSaveFile();
+                settings.Root.Add(
+                        new XElement("backup", "true"),
+                        new XElement("towatch",
+                            new XElement("orderby", "Title"),
+                            new XElement("descendingorderby", "false")
+                        ),
+                        new XElement("watched",
+                            new XElement("orderby", "Title"),
+                            new XElement("descendingorderby", "false")
+                        ),
+                        new XElement("watching",
+                            new XElement("orderby", "Title"),
+                            new XElement("descendingorderby", "false")
+                        ),
+                        new XElement("dropped",
+                            new XElement("orderby", "Title"),
+                            new XElement("descendingorderby", "false")
+                        ),
+                        new XElement("search",
+                            new XElement("orderby", "Title"),
+                            new XElement("descendingorderby", "false")
+                        )
+                    );
+                settings.Save(path + "/Config.xml");
             }
-            if (!File.Exists(path + "/MainEntries.xml"))
-            {
-                CreateSaveFile();
-            }
+            if (backUp.Length > 0) { settings.Root.Element("backup").Value = backUp; }
+            if (orderBy.Length > 0) { settings.Root.Element(view).Element("orderby").Value = orderBy; }
+            if (descendingOrderBy.Length > 0) { settings.Root.Element(view).Element("descendingorderby").Value = descendingOrderBy; }
+            if (backUp.Length > 0  || orderBy.Length > 0 || descendingOrderBy.Length > 0) { settings.Save(path + "/Config.xml"); }
+
+            return settings;
         }
 
-        private static void CreateSaveFile()
+        private static void CheckAndCreateDirAndFile()
         {
-            XDocument doc = new XDocument(new XElement("anime"));
-            doc.Save(path + "/MainEntries.xml");
+            if (!Directory.Exists(path)){ Directory.CreateDirectory(path); }
+            if (!File.Exists(path + "/MainEntries.xml")){ CreateSaveFile("/MainEntries.xml", "anime"); }
+            if (!File.Exists(path + "/Config.xml")){ CreateSaveFile("/Config.xml", "config"); }
+        }
+
+        private static void CreateSaveFile(string fname, string rootElementName)
+        {
+            XDocument doc = new XDocument(new XElement(rootElementName));
+            doc.Save(path + fname);
         }
     }
 }

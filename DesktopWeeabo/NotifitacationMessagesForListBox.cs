@@ -14,17 +14,13 @@ namespace DesktopWeeabo
         public NotifitacationMessagesForListBox(double height, string message)
         {
             HorizontalAlignment = HorizontalAlignment.Stretch;
-            VerticalAlignment = VerticalAlignment.Stretch;
-            VerticalContentAlignment = VerticalAlignment.Center;
-            BorderBrush = Brushes.Pink;
-            BorderThickness = new Thickness(1);
-            Content = SetMessage(height, message);
+            Height = height-10;
+            Content = SetMessage(message);
         }
 
-        private TextBlock SetMessage(double height, string message) {
+        private TextBlock SetMessage(string message) {
             return new TextBlock()
             {
-                //Margin = new Thickness(0, (height / 2) - 20, 0, 0),
                 FontSize = 30,
                 Text = message,
                 FontWeight = FontWeights.Bold,

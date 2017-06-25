@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Threading;
 using System.Xml.Linq;
 
@@ -13,35 +8,65 @@ namespace DesktopWeeabo
 {
     public class RepeatingViewFunctions
     {
-        private System.Windows.Threading.DispatcherTimer typingTimer;
+        private System.Windows.Threading.DispatcherTimer typingTimer, ComboBoxTimer, CheckBoxTimer;
+        private string orderByMem;
 
-        public void TextBlockTimer(object sender, ListBox listBox, int view)
+        public void TextBlockTimer(object sender, ListBox listBox, int view, string sortBy, string descending)
         {
             var tb = sender as TextBox;
             if (typingTimer == null)
             {
-
                 typingTimer = new DispatcherTimer();
                 typingTimer.Interval = TimeSpan.FromMilliseconds(500);
-
-
                 typingTimer.Tick += (s, args) => {
                     typingTimer.Stop();
-                    if (tb.Text.Length > 0){ BuildListBoxItems(listBox, tb.Text.ToLower(), view); }
-                    else { BuildListBoxItems(listBox, "", view); }
+                    if (tb.Text.Length > 0) { BuildListBoxItems(listBox, tb.Text.ToLower(), view, sortBy, Convert.ToBoolean(descending)); }
+                    else { BuildListBoxItems(listBox, "", view, sortBy, Convert.ToBoolean(descending)); }                    
                 };
             }
             typingTimer.Stop();
             typingTimer.Start();
         }
 
-        public void BuildListBoxItems(ListBox listBox, string query, int view)
+        public void SortByComboBoxTimer(object sender, ListBox listBox, int view, string descending)
+        {
+            if (ComboBoxTimer == null)
+            {
+                ComboBoxTimer = new DispatcherTimer();
+                ComboBoxTimer.Interval = TimeSpan.FromMilliseconds(500);
+                ComboBoxTimer.Tick += (s, args) => {
+                    ComboBoxTimer.Stop();
+                    string sortby = ((sender as ComboBox).SelectedItem as ComboBoxItem).Content.ToString();
+                    BuildListBoxItems(listBox, "", view, sortby, Convert.ToBoolean(descending));
+                };
+            }
+            ComboBoxTimer.Stop();
+            ComboBoxTimer.Start();
+        }
+
+        public void SortByDescendingTimer(object sender, ListBox listBox, int view)
+        {
+            if (CheckBoxTimer == null)
+            {
+                CheckBoxTimer = new DispatcherTimer();
+                CheckBoxTimer.Interval = TimeSpan.FromMilliseconds(500);
+                CheckBoxTimer.Tick += (s, args) => {
+                    CheckBoxTimer.Stop();
+                    bool descending = (sender as CheckBox).IsChecked ?? false;
+                    BuildListBoxItems(listBox, "", view, "", descending);
+                };
+            }
+            CheckBoxTimer.Stop();
+            CheckBoxTimer.Start();
+        }
+
+        public void BuildListBoxItems(ListBox listBox, string query, int view, string orderBy, bool descendingOrder)
         {
             listBox.Items.Clear();
             listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "Loading"));
-
             string[] viewingStatuses = { "To Watch", "Watched", "Watching", "Dropped" };
-            XDocument entries = ItemHandler.MakeLocalSearch(query, viewingStatuses[view]);
+            orderByMem = orderBy.Length > 0 ? orderBy : orderByMem;
+            XDocument entries = SortEntries(ItemHandler.MakeLocalSearch(query, viewingStatuses[view]), orderByMem, descendingOrder);
 
             if (entries.Descendants("entry").Any())
             {
@@ -61,6 +86,22 @@ namespace DesktopWeeabo
                 listBox.Items.Clear();
                 listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "No animes with viewing status '" + viewingStatuses[view] + "' are matching: '" + query+"'."));
             }
+        }
+
+        private XDocument SortEntries(XDocument entries, string orderBy, bool descendingOrder)
+        {
+            IOrderedEnumerable<XElement> sorted;
+
+            if (descendingOrder)
+            {
+                sorted = entries.Descendants("entry").OrderByDescending(p => p.Element(orderBy.ToLower().Replace(" ", "_")).Value);
+            }
+            else
+            {
+                sorted = entries.Descendants("entry").OrderBy(p => p.Element(orderBy.ToLower().Replace(" ", "_")).Value);
+            }
+            XDocument doc = new XDocument(new XElement("anime", sorted));
+            return doc;
         }
     }
 }
