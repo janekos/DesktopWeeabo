@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DesktopWeeabo.ViewModels
 {
-    class ToWatchViewModel
+    class SettingsViewModel
     {
     }
 }

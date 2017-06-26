@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DesktopWeeabo.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,25 +29,36 @@ namespace DesktopWeeabo
             ItemHandler.ManageSettings();
             DataContext = new NavigationViewModel();
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
-            Search.Background = Brushes.LightBlue;
+            Search.IsTabStop = true;
         }
 
         private void SelectedButton(object sender, RoutedEventArgs e)
         {
-            ToWatch.Background = Brushes.White;
-            Watching.Background = Brushes.White;
-            Dropped.Background = Brushes.White;
-            Search.Background = Brushes.White;
-            Watched.Background = Brushes.White;
-            Settings.Background = Brushes.White;
-            About.Background = Brushes.White;
+            ToWatch.IsTabStop = false;
+            Watching.IsTabStop = false;
+            Dropped.IsTabStop = false;
+            Search.IsTabStop = false;
+            Watched.IsTabStop = false;
+            Settings.IsTabStop = false;
             var selected = sender as Button;
-            selected.Background = Brushes.LightBlue;
+            selected.IsTabStop = true;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             ItemHandler.CreateBackUp();
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("DesktopWeeabo\n\n" +
+                "Overview: A program I made for managing my anime viewing, because I couldn't be bothered to go on some website to do that.\n\n" +
+                "Author: Janek Kossinski\n" +
+                "Email: janek.kossinski@gmail.com\n" +
+                "Project github: https://github.com/janekos/DesktopWeeabo \n" +
+                "Version: 1.0.0\n" +
+                "Special thanks: Stackoverflow (yeah..)\n" +
+                "2017 Summer","About", MessageBoxButton.OK, MessageBoxImage.Asterisk);
         }
     }
 }

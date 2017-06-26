@@ -1,4 +1,5 @@
 ﻿using DesktopWeeabo;
+using DesktopWeeabo.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace DesktopWeeabo
+namespace DesktopWeeabo.ViewModels
 {
     class NavigationViewModel : INotifyPropertyChanged
     {
@@ -16,6 +17,7 @@ namespace DesktopWeeabo
         public ICommand WatchedCommand { get; set; }
         public ICommand WatchingCommand { get; set; }
         public ICommand DroppedCommand { get; set; }
+        public ICommand SettingsCommand { get; set; }
 
         private object selectedViewModel;
 
@@ -33,6 +35,7 @@ namespace DesktopWeeabo
             WatchedCommand = new BaseCommand(OpenWatched);
             WatchingCommand = new BaseCommand(OpenWatching);
             DroppedCommand = new BaseCommand(OpenDropped);
+            SettingsCommand = new BaseCommand(OpenSettings);
         }
 
         private void OpenSearch(object obj)
@@ -54,6 +57,10 @@ namespace DesktopWeeabo
         private void OpenDropped(object obj)
         {
             SelectedViewModel = new DroppedViewModel();
+        }
+        private void OpenSettings(object obj)
+        {
+            SelectedViewModel = new SettingsViewModel();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -16,7 +15,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Xml.Linq;
 
-namespace DesktopWeeabo
+namespace DesktopWeeabo.Views
 {
     public partial class SearchView : UserControl
     {
@@ -48,7 +47,7 @@ namespace DesktopWeeabo
             Loaded += delegate
             {
                 listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "Try searching for something above."));
-            };            
+            };
         }
 
         private void Search_TextChanged(object sender, EventArgs e)
@@ -60,7 +59,7 @@ namespace DesktopWeeabo
                 typingTimer.Interval = TimeSpan.FromMilliseconds(500);
                 typingTimer.Tick += (s, args) => {
                     typingTimer.Stop();
-                    if (tb.Text.Length > 0){ BuildListBoxItems(tb.Text, (orderByComboBox.SelectedItem as ComboBoxItem).Content.ToString(), descendingOrderByCheckBox.IsChecked ?? false); }
+                    if (tb.Text.Length > 0) { BuildListBoxItems(tb.Text, (orderByComboBox.SelectedItem as ComboBoxItem).Content.ToString(), descendingOrderByCheckBox.IsChecked ?? false); }
                     else
                     {
                         listBox.Items.Clear();
@@ -92,7 +91,7 @@ namespace DesktopWeeabo
                 }
                 ComboBoxTimer.Stop();
                 ComboBoxTimer.Start();
-            }            
+            }
         }
 
         public void SortByDescendingTimer(object sender, EventArgs e)
@@ -116,7 +115,7 @@ namespace DesktopWeeabo
         }
 
         private async void BuildListBoxItems(string query, string orderBy, bool descendingOrder)
-        {            
+        {
             queryMem = query.Length > 0 ? query : queryMem;
             orderByMem = orderBy.Length > 0 ? orderBy : orderByMem;
             if (queryMem.Length > 0)
@@ -160,7 +159,7 @@ namespace DesktopWeeabo
                 {
                     BuildListBoxItems(query, orderBy, descendingOrder);
                 }
-            }            
+            }
         }
 
         private XDocument SortEntries(XDocument entries, string orderBy, bool descendingOrder)

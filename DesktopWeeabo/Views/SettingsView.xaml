@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="DesktopWeeabo.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DesktopWeeabo.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid Background="White">
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="SETTINGS" VerticalAlignment="Top" FontSize="30" Height="35" Padding="0,0,0,0" Margin="10,-7,0,0"/>
+        <TextBlock Name="explanationHeader" HorizontalAlignment="right" TextWrapping="Wrap" Text="EXPLANATION" VerticalAlignment="Top" FontSize="30" Height="35" Padding="0,0,0,0" Margin="0,-7,5,0" Visibility="Hidden"/>
+        <CheckBox 
+            Name="backUpCheckBox" 
+            Content="Back up" 
+            HorizontalAlignment="Left" 
+            Margin="10,46,0,0" 
+            VerticalAlignment="Top" 
+            FlowDirection="RightToLeft" 
+            Checked="CheckBoxChanged" 
+            Unchecked="CheckBoxChanged"
+            MouseEnter="Element_MouseEnter"
+            MouseLeave="Element_MouseLeave"
+            ToolTip="Every time you close this program it backs up all the animes that you have added to any of the lists. Everyday a separate backup file is made when you close the program."
+            ToolTipService.IsEnabled="False"/>
+        <Separator HorizontalAlignment="Stretch" Height="18" Margin="10,28,5,0" VerticalAlignment="Top" Background="Red"/>
+        <TextBlock Name="explanation" HorizontalAlignment="Right" Margin="0,46,5,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" MaxWidth="190" TextAlignment="Justify"/>
+        <TextBlock HorizontalAlignment="Left" Margin="82,46,0,0" TextWrapping="Wrap" Text="Saved!" VerticalAlignment="Top" Foreground="Red" Visibility="Hidden"/>
+    </Grid>
+</UserControl>

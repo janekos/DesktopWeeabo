@@ -255,7 +255,7 @@ namespace DesktopWeeabo
         private TextBlock SetComboBoxLabel() {
             return new TextBlock()
             {
-                Margin = new Thickness(0, 0, 0, 4),
+                Margin = new Thickness(4, 0, 0, 4),
                 FontWeight = FontWeights.Bold,
                 Text = "Viewing status"
             };
@@ -270,9 +270,8 @@ namespace DesktopWeeabo
             ComboBox cb = new ComboBox()
             {
                 HorizontalAlignment = HorizontalAlignment.Left,
-                Height = 25,
-                Width = 90,
-                Margin = new Thickness(0,0,0,10),
+                Width = 80,
+                Margin = new Thickness(5,0,0,10),
                 BorderBrush = Brushes.Red,
                 Background = Brushes.White
             };

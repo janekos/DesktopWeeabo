@@ -1,8 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 using System.Xml.Linq;
 
-namespace DesktopWeeabo
+namespace DesktopWeeabo.Views
 {
     public partial class ToWatchView : System.Windows.Controls.UserControl
     {
@@ -15,9 +27,9 @@ namespace DesktopWeeabo
             InitializeComponent();
             config = ItemHandler.ManageSettings();
             wasItemChangedBySystem = true;
-            for (var i = 0; i<9; i++)
+            for (var i = 0; i < 9; i++)
             {
-                if((orderByComboBox.Items[i] as ComboBoxItem).Content.ToString() == config.Root.Element("towatch").Element("orderby").Value)
+                if ((orderByComboBox.Items[i] as ComboBoxItem).Content.ToString() == config.Root.Element("towatch").Element("orderby").Value)
                 {
                     orderByComboBox.SelectedIndex = i;
                     break;
@@ -46,7 +58,7 @@ namespace DesktopWeeabo
             if (!wasItemChangedBySystem)
             {
                 rvf.SortByComboBoxTimer(sender, listBox, 0, descendingOrderByCheckBox.IsChecked.ToString());
-                ItemHandler.ManageSettings("", "towatch",(orderByComboBox.SelectedItem as ComboBoxItem).Content.ToString(), "");
+                ItemHandler.ManageSettings("", "towatch", (orderByComboBox.SelectedItem as ComboBoxItem).Content.ToString(), "");
             }
         }
 

@@ -136,6 +136,7 @@ namespace DesktopWeeabo
             if (!settings.Root.Elements().Any())
             {
                 settings.Root.Add(
+                        new XElement("comment", "Wait! I seriously suggest not touching anything here. In case of fire just delete this file."),
                         new XElement("backup", "true"),
                         new XElement("towatch",
                             new XElement("orderby", "Title"),
@@ -154,7 +155,7 @@ namespace DesktopWeeabo
                             new XElement("descendingorderby", "false")
                         ),
                         new XElement("search",
-                            new XElement("orderby", "Title"),
+                            new XElement("orderby", "No sort"),
                             new XElement("descendingorderby", "false")
                         )
                     );

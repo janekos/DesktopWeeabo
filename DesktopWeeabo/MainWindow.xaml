@@ -3,26 +3,30 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DesktopWeeabo"
+        xmlns:views="clr-namespace:DesktopWeeabo.Views"
+        xmlns:viewmodels="clr-namespace:DesktopWeeabo.ViewModels"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
         Title="Desktop Weeabo" Height="450" Width="800"
         Closing="Window_Closing">
     <Window.Resources>
-        <DataTemplate DataType="{x:Type local:SearchViewModel}">
-            <local:SearchView/>
+        <DataTemplate DataType="{x:Type viewmodels:SearchViewModel}">
+            <views:SearchView/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type local:ToWatchViewModel}">
-            <local:ToWatchView/>
+        <DataTemplate DataType="{x:Type viewmodels:ToWatchViewModel}">
+            <views:ToWatchView/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type local:WatchedViewModel}">
-            <local:WatchedView/>
+        <DataTemplate DataType="{x:Type viewmodels:WatchedViewModel}">
+            <views:WatchedView/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type local:WatchingViewModel}">
-            <local:WatchingView/>
+        <DataTemplate DataType="{x:Type viewmodels:WatchingViewModel}">
+            <views:WatchingView/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type local:DroppedViewModel}">
-            <local:DroppedView/>
+        <DataTemplate DataType="{x:Type viewmodels:DroppedViewModel}">
+            <views:DroppedView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:SettingsViewModel}">
+            <views:SettingsView/>
         </DataTemplate>
     </Window.Resources>
 
@@ -35,13 +39,13 @@
     <Grid>
         <Image Source="c:\users\mc janek\documents\visual studio 2017\Projects\DesktopWeeabo\DesktopWeeabo\Resources\tag.png" HorizontalAlignment="Left" Height="67" Margin="10,10,0,0" VerticalAlignment="Top" Width="110"/>
         <Grid Margin="10,87,0,10" Background="#FF931515" Width="110" HorizontalAlignment="Left">
-            <Button Name="Search" Content="SEARCH" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="90" Background="White" BorderBrush="{x:Null}" Command="{Binding SearchCommand}" Click="SelectedButton"/>
-            <Button Name="ToWatch" Content="TO WATCH" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" Width="90" Background="White" BorderBrush="{x:Null}" Command="{Binding ToWatchCommand}" Click="SelectedButton"/>
-            <Button Name="Watched" Content="WATCHED" HorizontalAlignment="Left" Margin="10,64,0,0" VerticalAlignment="Top" Width="90" Background="White" BorderBrush="{x:Null}" Command="{Binding WatchedCommand}" Click="SelectedButton"/>
-            <Button Name="Watching" Content="WATCHING" HorizontalAlignment="Left" Margin="10,91,0,0" VerticalAlignment="Top" Width="90" Background="White" BorderBrush="{x:Null}" Command="{Binding WatchingCommand}" Click="SelectedButton"/>
-            <Button Name="Dropped" Content="DROPPED" HorizontalAlignment="Left" Margin="10,118,0,0" VerticalAlignment="Top" Width="90" Background="White" BorderBrush="{x:Null}" Command="{Binding DroppedCommand}" Click="SelectedButton"/>
-            <Button Name="Settings" Content="SETTINGS" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="90" Background="White" BorderBrush="{x:Null}" Click="SelectedButton" Margin="10,0,0,37"/>
-            <Button Name="About" Content="ABOUT" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="90" Background="White" BorderBrush="{x:Null}" Click="SelectedButton" Margin="10,0,0,10"/>
+            <Button Name="Search" Content="SEARCH" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="90" Command="{Binding SearchCommand}" Click="SelectedButton"/>
+            <Button Name="ToWatch" Content="TO WATCH" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" Width="90" Command="{Binding ToWatchCommand}" Click="SelectedButton"/>
+            <Button Name="Watched" Content="WATCHED" HorizontalAlignment="Left" Margin="10,64,0,0" VerticalAlignment="Top" Width="90" Command="{Binding WatchedCommand}" Click="SelectedButton"/>
+            <Button Name="Watching" Content="WATCHING" HorizontalAlignment="Left" Margin="10,91,0,0" VerticalAlignment="Top" Width="90" Command="{Binding WatchingCommand}" Click="SelectedButton"/>
+            <Button Name="Dropped" Content="DROPPED" HorizontalAlignment="Left" Margin="10,118,0,0" VerticalAlignment="Top" Width="90" Command="{Binding DroppedCommand}" Click="SelectedButton"/>
+            <Button Name="Settings" Content="SETTINGS" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="90" Command="{Binding SettingsCommand}" Click="SelectedButton" Margin="10,0,0,37"/>
+            <Button Name="About" Content="ABOUT" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="90" Click="About_Click" Margin="10,0,0,10"/>
         </Grid>
         <ContentControl x:Name="Pages" Content="{Binding SelectedViewModel}" Margin="125,10,10,10"/>
     </Grid>
