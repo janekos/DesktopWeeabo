@@ -54,8 +54,7 @@ namespace DesktopWeeabo
             MessageBox.Show("DesktopWeeabo\n\n" +
                 "Overview: A program I made for managing my anime viewing, because I couldn't be bothered to go on some website to do that.\n\n" +
                 "Author: Janek Kossinski\n" +
-                "Email: janek.kossinski@gmail.com\n" +
-                "Project github: https://github.com/janekos/DesktopWeeabo \n" +
+                "Project github: https://github.com/janekos/DesktopWeeabo (report any bugs there)\n" +
                 "Version: 1.0.0\n" +
                 "Special thanks: Stackoverflow (yeah..)\n" +
                 "2017 Summer","About", MessageBoxButton.OK, MessageBoxImage.Asterisk);
