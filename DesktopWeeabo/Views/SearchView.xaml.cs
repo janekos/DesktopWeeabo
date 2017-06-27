@@ -21,8 +21,6 @@ namespace DesktopWeeabo.Views
     {
 
         private System.Windows.Threading.DispatcherTimer typingTimer, ComboBoxTimer, CheckBoxTimer;
-        private RepeatingViewFunctions rvf = new RepeatingViewFunctions();
-        private XDocument config;
         private string queryMem = "";
         private string orderByMem;
         private bool wasItemChangedBySystem = false;
@@ -30,18 +28,17 @@ namespace DesktopWeeabo.Views
         public SearchView()
         {
             InitializeComponent();
-            config = ItemHandler.ManageSettings();
             wasItemChangedBySystem = true;
             for (var i = 0; i < 10; i++)
             {
-                if ((orderByComboBox.Items[i] as ComboBoxItem).Content.ToString() == config.Root.Element("search").Element("orderby").Value)
+                if ((orderByComboBox.Items[i] as ComboBoxItem).Content.ToString() == ConfigClass.Search.OrderBy)
                 {
                     orderByComboBox.SelectedIndex = i;
                     break;
                 }
             }
             if (orderByComboBox.SelectedIndex == 0) { descendingOrderByCheckBox.IsEnabled = false; }
-            descendingOrderByCheckBox.IsChecked = Convert.ToBoolean(config.Root.Element("search").Element("descendingorderby").Value);
+            descendingOrderByCheckBox.IsChecked = ConfigClass.Search.Descending;
             wasItemChangedBySystem = false;
 
             Loaded += delegate
@@ -86,7 +83,7 @@ namespace DesktopWeeabo.Views
                         if (sortby.Equals("No sort")) { descendingOrderByCheckBox.IsEnabled = false; }
                         else { descendingOrderByCheckBox.IsEnabled = true; }
                         BuildListBoxItems("", sortby, descendingOrderByCheckBox.IsChecked ?? false);
-                        ItemHandler.ManageSettings("", "search", (orderByComboBox.SelectedItem as ComboBoxItem).Content.ToString(), "");
+                        ConfigClass.Search.OrderBy = (orderByComboBox.SelectedItem as ComboBoxItem).Content.ToString();
                     };
                 }
                 ComboBoxTimer.Stop();
@@ -106,7 +103,7 @@ namespace DesktopWeeabo.Views
                         CheckBoxTimer.Stop();
                         bool descending = (sender as CheckBox).IsChecked ?? false;
                         BuildListBoxItems("", "", descending);
-                        ItemHandler.ManageSettings("", "search", "", descendingOrderByCheckBox.IsChecked.ToString());
+                        ConfigClass.Search.Descending = descendingOrderByCheckBox.IsChecked ?? false;
                     };
                 }
                 CheckBoxTimer.Stop();

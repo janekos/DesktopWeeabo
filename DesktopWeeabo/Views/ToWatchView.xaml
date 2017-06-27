@@ -9,12 +9,9 @@
     <Grid>
         <TextBlock HorizontalAlignment="Left" Margin="0,3,0,0" TextWrapping="Wrap" Text="Search to watch animes:" VerticalAlignment="Top"/>
         <TextBox Height="23" TextChanged="Search_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" Margin="131,0,0,0"/>
-        <ListBox Name="listBox" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch" Margin="0,52,0,0" BorderBrush="#FFFF005D" HorizontalContentAlignment="Stretch"/>
+        <ListBox Name="listBox" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch" Margin="0,52,0,0" HorizontalContentAlignment="Stretch"/>
         <TextBlock HorizontalAlignment="Left" Margin="0,28,0,0" TextWrapping="Wrap" Text="Sort by: " VerticalAlignment="Top" TextAlignment="Center" Height="23"/>
         <ComboBox Name="orderByComboBox" HorizontalAlignment="Left" Margin="49,28,0,0" VerticalAlignment="Top" Width="80" SelectionChanged="SortByComboBox_SelectionChanged">
-            <ComboBox.Resources>
-                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Red" />
-            </ComboBox.Resources>
             <ComboBoxItem Content="Title" HorizontalAlignment="Left" Width="80"/>
             <ComboBoxItem Content="English" HorizontalAlignment="Left" Width="80"/>
             <ComboBoxItem Content="Synonyms" HorizontalAlignment="Left" Width="80"/>

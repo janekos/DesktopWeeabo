@@ -88,6 +88,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ConfigClass.cs" />
     <Compile Include="ListBoxItemForAnime.cs" />
     <Compile Include="NotifitacationMessagesForListBox.cs" />
     <Compile Include="RepeatingViewFunctions.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="Views\WatchingView.xaml.cs">
       <DependentUpon>WatchingView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewVariables.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

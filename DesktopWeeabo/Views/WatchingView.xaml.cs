@@ -18,24 +18,22 @@ namespace DesktopWeeabo.Views
 {
     public partial class WatchingView : UserControl
     {
-        private RepeatingViewFunctions rvf = new RepeatingViewFunctions();
-        private XDocument config;
         private bool wasItemChangedBySystem = false;
+        private RepeatingViewFunctions rvf = new RepeatingViewFunctions();
 
         public WatchingView()
         {
             InitializeComponent();
-            config = ItemHandler.ManageSettings();
             wasItemChangedBySystem = true;
             for (var i = 0; i < 9; i++)
             {
-                if ((orderByComboBox.Items[i] as ComboBoxItem).Content.ToString() == config.Root.Element("watching").Element("orderby").Value)
+                if ((orderByComboBox.Items[i] as ComboBoxItem).Content.ToString() == ConfigClass.Watching.OrderBy)
                 {
                     orderByComboBox.SelectedIndex = i;
                     break;
                 }
             }
-            descendingOrderByCheckBox.IsChecked = Convert.ToBoolean(config.Root.Element("watching").Element("descendingorderby").Value);
+            descendingOrderByCheckBox.IsChecked = ConfigClass.Watching.Descending;
             wasItemChangedBySystem = false;
             Loaded += delegate
             {
@@ -50,7 +48,7 @@ namespace DesktopWeeabo.Views
 
         private void Load_animes()
         {
-            rvf.BuildListBoxItems(listBox, "", 2, config.Root.Element("watching").Element("orderby").Value, Convert.ToBoolean(config.Root.Element("watching").Element("descendingorderby").Value));
+            rvf.BuildListBoxItems(listBox, "", 2, ConfigClass.Watching.OrderBy, ConfigClass.Watching.Descending);
         }
 
         private void SortByComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -58,7 +56,7 @@ namespace DesktopWeeabo.Views
             if (!wasItemChangedBySystem)
             {
                 rvf.SortByComboBoxTimer(sender, listBox, 2, descendingOrderByCheckBox.IsChecked.ToString());
-                ItemHandler.ManageSettings("", "watching", (orderByComboBox.SelectedItem as ComboBoxItem).Content.ToString(), "");
+                ConfigClass.Watching.OrderBy = (orderByComboBox.SelectedItem as ComboBoxItem).Content.ToString();
             }
         }
 
@@ -67,7 +65,7 @@ namespace DesktopWeeabo.Views
             if (!wasItemChangedBySystem)
             {
                 rvf.SortByDescendingTimer(sender, listBox, 2);
-                ItemHandler.ManageSettings("", "watching", "", descendingOrderByCheckBox.IsChecked.ToString());
+                ConfigClass.Watching.Descending = descendingOrderByCheckBox.IsChecked ?? false;
             }
         }
     }

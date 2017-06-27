@@ -39,8 +39,7 @@ namespace DesktopWeeabo
 
             Height = 140;
             Focusable = false;
-            BorderThickness = new Thickness(0, 0, 0, 0.5);
-            BorderBrush = Brushes.Red;
+            Style = Application.Current.Resources["ChangableListBoxItem"] as Style;
             Content = grid;
         }
 
@@ -272,10 +271,8 @@ namespace DesktopWeeabo
                 HorizontalAlignment = HorizontalAlignment.Left,
                 Width = 80,
                 Margin = new Thickness(5,0,0,10),
-                BorderBrush = Brushes.Red,
                 Background = Brushes.White
             };
-            cb.Resources.Add(SystemColors.HighlightBrushKey, Brushes.Red);
             cb.Items.Add(SetComboBoxItem(viewingStatuses[0]));
             cb.Items.Add(SetComboBoxItem(viewingStatuses[1]));
             cb.Items.Add(SetComboBoxItem(viewingStatuses[2]));
@@ -307,7 +304,6 @@ namespace DesktopWeeabo
             {
                 Margin = new Thickness(0, 0, 0, 10),
                 Width = 40,
-                BorderBrush = Brushes.Red,
                 Text = text
             };
             tb.TextChanged += TextChanged_CurrEpisodeTextBox;

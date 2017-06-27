@@ -20,18 +20,42 @@ namespace DesktopWeeabo.Views
     public partial class SettingsView : UserControl
     {
         private DispatcherTimer savingTimer;
-        private XDocument config = ItemHandler.ManageSettings();
+        private bool canSave = true;
+        private bool wasValueChangedBySystem = false;
 
         public SettingsView()
         {
             InitializeComponent();
-            backUpCheckBox.IsChecked = Convert.ToBoolean(config.Root.Element("backup").Value);
+            wasValueChangedBySystem = true;
+            backUpCheckBox.IsChecked = ConfigClass.BackUp;
+            colorPickingComboBox.Background = ConfigClass.Color;
+            colorPickingComboBox.Resources.Add(SystemColors.HighlightBrushKey, Brushes.White);
+            colorPickingComboBox.Resources.Add(SystemColors.HighlightTextBrushKey, Brushes.Black);
+            wasValueChangedBySystem = false;
         }
 
         private void CheckBoxChanged(object sender, RoutedEventArgs e)
         {
-            SortByComboBoxTimer(ItemHandler.ManageSettings(backUpCheckBox.IsChecked.ToString()));
-            ItemHandler.ManageSettings(backUpCheckBox.IsChecked.ToString());
+            if (canSave && !wasValueChangedBySystem)
+            {
+                canSave = false;
+                backUpSaved.Visibility = Visibility.Visible;
+                SortByComboBoxTimer(backUpSaved);
+                ConfigClass.BackUp = backUpCheckBox.IsChecked ?? true;
+            }            
+        }
+
+        private void ColorPickingComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (canSave && !wasValueChangedBySystem)
+            {
+                canSave = false;
+                colorSaved.Visibility = Visibility.Visible;
+                SortByComboBoxTimer(colorSaved);
+                ConfigClass.Color = (SolidColorBrush)new BrushConverter().ConvertFromString((colorPickingComboBox.SelectedItem as ComboBoxItem).Content.ToString());
+                colorPickingComboBox.Background = ConfigClass.Color;
+                Application.Current.Resources["AppColor"] = ConfigClass.Color;
+            }            
         }
 
         private void Element_MouseEnter(object sender, MouseEventArgs e)
@@ -48,6 +72,28 @@ namespace DesktopWeeabo.Views
                         break;
                 }
             }
+            else if (sender.GetType() == typeof(TextBlock))
+            {
+                TextBlock obj = sender as TextBlock;
+                string name = obj.Name;
+                switch (name)
+                {
+                    case "colorTextBlock":
+                        explanation.Text = colorTextBlock.ToolTip.ToString();
+                        break;
+                }
+            }
+            else if (sender.GetType() == typeof(ComboBox))
+            {
+                ComboBox obj = sender as ComboBox;
+                string name = obj.Name;
+                switch (name)
+                {
+                    case "colorPickingComboBox":
+                        explanation.Text = colorPickingComboBox.ToolTip.ToString();
+                        break;
+                }
+            }
             explanationHeader.Visibility = Visibility.Visible;            
         }
 
@@ -57,7 +103,7 @@ namespace DesktopWeeabo.Views
             explanation.Text = "";
         }
 
-        private void SortByComboBoxTimer(Action todo)
+        private void SortByComboBoxTimer(TextBlock savedText)
         {
             if (savingTimer == null)
             {
@@ -65,7 +111,8 @@ namespace DesktopWeeabo.Views
                 savingTimer.Interval = TimeSpan.FromMilliseconds(500);
                 savingTimer.Tick += (s, args) => {
                     savingTimer.Stop();
-                    todo();
+                    savedText.Visibility = Visibility.Hidden;
+                    canSave = true;
                 };
             }
             savingTimer.Stop();

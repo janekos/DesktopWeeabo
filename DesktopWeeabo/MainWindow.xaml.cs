@@ -1,23 +1,7 @@
 ﻿using DesktopWeeabo.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
-using System.Xml;
-using System.Xml.Linq;
 
 namespace DesktopWeeabo
 {
@@ -30,6 +14,8 @@ namespace DesktopWeeabo
             DataContext = new NavigationViewModel();
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
             Search.IsTabStop = true;
+            ConfigClass.SetVariables();
+            Application.Current.Resources["AppColor"] = ConfigClass.Color;            
         }
 
         private void SelectedButton(object sender, RoutedEventArgs e)
@@ -47,6 +33,7 @@ namespace DesktopWeeabo
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             ItemHandler.CreateBackUp();
+            ConfigClass.SaveVariables();
         }
 
         private void About_Click(object sender, RoutedEventArgs e)

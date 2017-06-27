@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using System.Xml.Linq;
 
 namespace DesktopWeeabo
@@ -128,12 +129,13 @@ namespace DesktopWeeabo
             }
         }
 
-        public static XDocument ManageSettings(string backUp = "", string view = "", string orderBy = "", string descendingOrderBy = "")
+        public static XDocument ManageSettings(string backUp = "", SolidColorBrush color = null, ViewVariables towatch = null, ViewVariables watched = null, ViewVariables watching = null, ViewVariables dropped = null, ViewVariables search = null)
         {
             CheckAndCreateDirAndFile();
 
             XDocument settings = XDocument.Load(path + "/Config.xml");
-            if (!settings.Root.Elements().Any())
+            XElement root = settings.Root;
+            if (!root.Elements().Any())
             {
                 settings.Root.Add(
                         new XElement("comment", "Wait! I seriously suggest not touching anything here. In case of fire just delete this file."),
@@ -161,10 +163,22 @@ namespace DesktopWeeabo
                     );
                 settings.Save(path + "/Config.xml");
             }
-            if (backUp.Length > 0) { settings.Root.Element("backup").Value = backUp; }
-            if (orderBy.Length > 0) { settings.Root.Element(view).Element("orderby").Value = orderBy; }
-            if (descendingOrderBy.Length > 0) { settings.Root.Element(view).Element("descendingorderby").Value = descendingOrderBy; }
-            if (backUp.Length > 0  || orderBy.Length > 0 || descendingOrderBy.Length > 0) { settings.Save(path + "/Config.xml"); }
+            if (backUp.Length > 0)
+            {
+                root.Element("backup").Value = backUp;
+                root.Element("color").Value = color.ToString();
+                root.Element("towatch").Element("orderby").Value = towatch.OrderBy;
+                root.Element("towatch").Element("descendingorderby").Value = towatch.Descending.ToString();
+                root.Element("watched").Element("orderby").Value = watched.OrderBy;
+                root.Element("watched").Element("descendingorderby").Value = watched.Descending.ToString();
+                root.Element("watching").Element("orderby").Value = watching.OrderBy;
+                root.Element("watching").Element("descendingorderby").Value = watching.Descending.ToString();
+                root.Element("dropped").Element("orderby").Value = dropped.OrderBy;
+                root.Element("dropped").Element("descendingorderby").Value = dropped.Descending.ToString();
+                root.Element("search").Element("orderby").Value = search.OrderBy;
+                root.Element("search").Element("descendingorderby").Value = search.Descending.ToString();
+                settings.Save(path + "/Config.xml");
+            }
 
             return settings;
         }

@@ -18,24 +18,22 @@ namespace DesktopWeeabo.Views
 {
     public partial class DroppedView : UserControl
     {
-        private RepeatingViewFunctions rvf = new RepeatingViewFunctions();
-        private XDocument config;
         private bool wasItemChangedBySystem = false;
+        private RepeatingViewFunctions rvf = new RepeatingViewFunctions();
 
         public DroppedView()
         {
             InitializeComponent();
-            config = ItemHandler.ManageSettings();
             wasItemChangedBySystem = true;
             for (var i = 0; i < 9; i++)
             {
-                if ((orderByComboBox.Items[i] as ComboBoxItem).Content.ToString() == config.Root.Element("dropped").Element("orderby").Value)
+                if ((orderByComboBox.Items[i] as ComboBoxItem).Content.ToString() == ConfigClass.Dropped.OrderBy)
                 {
                     orderByComboBox.SelectedIndex = i;
                     break;
                 }
             }
-            descendingOrderByCheckBox.IsChecked = Convert.ToBoolean(config.Root.Element("dropped").Element("descendingorderby").Value);
+            descendingOrderByCheckBox.IsChecked = ConfigClass.Dropped.Descending;
             wasItemChangedBySystem = false;
             Loaded += delegate
             {
@@ -50,7 +48,7 @@ namespace DesktopWeeabo.Views
 
         private void Load_animes()
         {
-            rvf.BuildListBoxItems(listBox, "", 3, config.Root.Element("dropped").Element("orderby").Value, Convert.ToBoolean(config.Root.Element("dropped").Element("descendingorderby").Value));
+            rvf.BuildListBoxItems(listBox, "", 3, ConfigClass.Dropped.OrderBy, ConfigClass.Dropped.Descending);
         }
 
         private void SortByComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -58,7 +56,7 @@ namespace DesktopWeeabo.Views
             if (!wasItemChangedBySystem)
             {
                 rvf.SortByComboBoxTimer(sender, listBox, 3, descendingOrderByCheckBox.IsChecked.ToString());
-                ItemHandler.ManageSettings("", "dropped", (orderByComboBox.SelectedItem as ComboBoxItem).Content.ToString(), "");
+                ConfigClass.Dropped.OrderBy = (orderByComboBox.SelectedItem as ComboBoxItem).Content.ToString();
             }
         }
 
@@ -67,7 +65,7 @@ namespace DesktopWeeabo.Views
             if (!wasItemChangedBySystem)
             {
                 rvf.SortByDescendingTimer(sender, listBox, 3);
-                ItemHandler.ManageSettings("", "dropped", "", descendingOrderByCheckBox.IsChecked.ToString());
+                ConfigClass.Dropped.Descending = descendingOrderByCheckBox.IsChecked ?? false;
             }
         }
     }

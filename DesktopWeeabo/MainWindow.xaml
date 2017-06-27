@@ -1,8 +1,10 @@
-﻿<Window x:Class="DesktopWeeabo.MainWindow"
+﻿<Window x:Name="myWindow"
+        x:Class="DesktopWeeabo.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DesktopWeeabo"
         xmlns:views="clr-namespace:DesktopWeeabo.Views"
         xmlns:viewmodels="clr-namespace:DesktopWeeabo.ViewModels"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
@@ -36,9 +38,9 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-    <Grid>
+    <Grid Style="{StaticResource ChangableGrid}">
         <Image Source="c:\users\mc janek\documents\visual studio 2017\Projects\DesktopWeeabo\DesktopWeeabo\Resources\tag.png" HorizontalAlignment="Left" Height="67" Margin="10,10,0,0" VerticalAlignment="Top" Width="110"/>
-        <Grid Margin="10,87,0,10" Background="#FF931515" Width="110" HorizontalAlignment="Left">
+        <Grid Margin="10,87,0,10" Width="110" HorizontalAlignment="Left">
             <Button Name="Search" Content="SEARCH" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="90" Command="{Binding SearchCommand}" Click="SelectedButton"/>
             <Button Name="ToWatch" Content="TO WATCH" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" Width="90" Command="{Binding ToWatchCommand}" Click="SelectedButton"/>
             <Button Name="Watched" Content="WATCHED" HorizontalAlignment="Left" Margin="10,64,0,0" VerticalAlignment="Top" Width="90" Command="{Binding WatchedCommand}" Click="SelectedButton"/>
