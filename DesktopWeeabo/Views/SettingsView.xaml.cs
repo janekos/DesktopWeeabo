@@ -29,8 +29,14 @@ namespace DesktopWeeabo.Views
             wasValueChangedBySystem = true;
             backUpCheckBox.IsChecked = ConfigClass.BackUp;
             colorPickingComboBox.Background = ConfigClass.Color;
-            colorPickingComboBox.Resources.Add(SystemColors.HighlightBrushKey, Brushes.White);
-            colorPickingComboBox.Resources.Add(SystemColors.HighlightTextBrushKey, Brushes.Black);
+            for (var i = 0; i < colorPickingComboBox.Items.Count; i++)
+            {
+                if ((colorPickingComboBox.Items[i] as ComboBoxItem).Content.ToString() == ConfigClass.Color.ToString())
+                {
+                    colorPickingComboBox.SelectedIndex = i;
+                    break;
+                }
+            }
             wasValueChangedBySystem = false;
         }
 
@@ -54,7 +60,7 @@ namespace DesktopWeeabo.Views
                 SortByComboBoxTimer(colorSaved);
                 ConfigClass.Color = (SolidColorBrush)new BrushConverter().ConvertFromString((colorPickingComboBox.SelectedItem as ComboBoxItem).Content.ToString());
                 colorPickingComboBox.Background = ConfigClass.Color;
-                Application.Current.Resources["AppColor"] = ConfigClass.Color;
+                ProgramColorChangingClass.ChangeColors();
             }            
         }
 

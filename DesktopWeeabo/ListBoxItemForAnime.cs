@@ -38,8 +38,9 @@ namespace DesktopWeeabo
             if (view == 2) { SetDispatcherTimers(); }
 
             Height = 140;
+            BorderBrush = Brushes.Black;
+            BorderThickness = new Thickness(0,0,0,1);
             Focusable = false;
-            Style = Application.Current.Resources["ChangableListBoxItem"] as Style;
             Content = grid;
         }
 
@@ -62,7 +63,8 @@ namespace DesktopWeeabo
                 FontWeight = FontWeights.Bold,
                 Text = title,
                 TextTrimming = TextTrimming.WordEllipsis,
-                Margin = new Thickness(105, 10, 110, 10)
+                Margin = new Thickness(105, 10, 110, 10),
+                Foreground = Application.Current.Resources["AppColorForText"] as SolidColorBrush
             };
         }
 
@@ -70,6 +72,7 @@ namespace DesktopWeeabo
             TextBlock tb =  new TextBlock(){ Margin = new Thickness(0, 0, 0, 5) };
             tb.Inlines.Add(new Bold(new Run(title)));
             tb.Inlines.Add(new Run("(you can leave it empty)"));
+            tb.Foreground = Application.Current.Resources["AppColorForText"] as SolidColorBrush;
             return tb;
         }
 
@@ -87,7 +90,8 @@ namespace DesktopWeeabo
             return new TextBlock()
             {
                 Text = "Your score: ",
-                FontWeight = FontWeights.Bold
+                FontWeight = FontWeights.Bold,
+                Foreground = Application.Current.Resources["AppColorForText"] as SolidColorBrush
             };
         }
 
@@ -106,8 +110,8 @@ namespace DesktopWeeabo
             return new TextBlock()
             {
                 Text = "*Only numbers up to 10 are allowed.",
-                Foreground = Brushes.Red,
-                Visibility = Visibility.Hidden
+                Visibility = Visibility.Hidden,
+                Foreground = Application.Current.Resources["AppColorForText"] as SolidColorBrush
             };
         }
 
@@ -172,7 +176,8 @@ namespace DesktopWeeabo
             {
                 Margin = new Thickness(0, 2, 0, 0),
                 TextWrapping = TextWrapping.Wrap,
-                TextTrimming = TextTrimming.WordEllipsis
+                TextTrimming = TextTrimming.WordEllipsis,
+                Foreground = Application.Current.Resources["AppColorForText"] as SolidColorBrush
             };
             string synposisText = CleanSynopsisText(text);
             tb.Inlines.Add(new Bold(new Run("Synopsis: ")));
@@ -185,6 +190,7 @@ namespace DesktopWeeabo
             TextBlock tb = new TextBlock() { Margin = new Thickness(0, 2, 0, 0) };
             tb.Inlines.Add(new Bold(new Run(first)));
             tb.Inlines.Add(new Run(second));
+            tb.Foreground = Application.Current.Resources["AppColorForText"] as SolidColorBrush;
             return tb;
         }
 
@@ -193,7 +199,8 @@ namespace DesktopWeeabo
             TextBlock tb = new TextBlock()
             {
                 TextWrapping = TextWrapping.Wrap,
-                TextTrimming = TextTrimming.WordEllipsis
+                TextTrimming = TextTrimming.WordEllipsis,
+                Foreground = Application.Current.Resources["AppColorForText"] as SolidColorBrush
             };
             tb.Inlines.Add(new Bold(new Run(title)));
             tb.Inlines.Add(new Run(text));
@@ -206,6 +213,7 @@ namespace DesktopWeeabo
             TextBlock tb = new TextBlock();
             tb.Inlines.Add(new Bold(new Run("Personal score: ")));
             tb.Inlines.Add(new Run(text));
+            tb.Foreground = Application.Current.Resources["AppColorForText"] as SolidColorBrush;
             return tb;
         }
 
@@ -256,7 +264,8 @@ namespace DesktopWeeabo
             {
                 Margin = new Thickness(4, 0, 0, 4),
                 FontWeight = FontWeights.Bold,
-                Text = "Viewing status"
+                Text = "Viewing status",
+                Foreground = Application.Current.Resources["AppColorForText"] as SolidColorBrush
             };
         }
 
@@ -294,9 +303,11 @@ namespace DesktopWeeabo
             {
                 Margin = new Thickness(0, 0, 0, 4),
                 FontWeight = FontWeights.Bold,
-                Text = "Current episode:"
+                Text = "Current episode:",
+                Foreground = Application.Current.Resources["AppColorForText"] as SolidColorBrush
             };
         }
+
 
         private TextBox SetCurrEpisodeTextBox(string text)
         {
@@ -317,10 +328,10 @@ namespace DesktopWeeabo
             {
                 HorizontalAlignment = HorizontalAlignment.Right,
                 VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(0, 84, 78, 0),
+                Margin = new Thickness(0, 78, 78, 0),
                 Height = 22,
-                Background = Brushes.White,
-                BorderBrush = Brushes.Red,
+                Style = Application.Current.Resources["ChangableLabel"] as Style,
+                BorderBrush = Brushes.Black,
                 BorderThickness = new Thickness(1),
                 Visibility = Visibility.Collapsed,
                 Padding = new Thickness(3,1,3,1)
@@ -395,6 +406,11 @@ namespace DesktopWeeabo
         private void UserInputCancel_Click(object sender, RoutedEventArgs e) {
             TextBlock showMore = (grid.Children[3] as StackPanel).Children[2] as TextBlock;
             ComboBox statusComboBox = (grid.Children[3] as StackPanel).Children[1] as ComboBox;
+            if(view == 2)
+            {
+                TextBox currEp = ((grid.Children[3] as StackPanel).Children[3] as TextBox);
+                currEp.IsEnabled = true;
+            }
             showMore.Visibility = Visibility.Visible;
             grid.Children.RemoveAt(2);
             grid.Children.Insert(2, SetMiddleStackPanel());
@@ -430,6 +446,7 @@ namespace DesktopWeeabo
                 view = selectedComboBoxItemIndex;
                 UserInputCancel_Click(new object(), new RoutedEventArgs());
             }
+            TryAddingEmptyListBoxMessage();
         }
 
         private void StatusComboBox_SelectionChanged(object sender, EventArgs e)
@@ -491,10 +508,6 @@ namespace DesktopWeeabo
                         else
                         {
                             listbox.Items.Remove(this);
-                            if (listbox.Items.Count == 0)
-                            {
-                                listbox.Items.Add(new NotifitacationMessagesForListBox(listbox.ActualHeight, "You have not listed any animes as '" + viewingStatuses[view] + "'."));
-                            }
                         }
                         ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatus, "", "", "", "",true);
 
@@ -512,6 +525,8 @@ namespace DesktopWeeabo
                         ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatus);
                         break;
                 }
+
+                TryAddingEmptyListBoxMessage();
             }
         }
 
@@ -610,7 +625,16 @@ namespace DesktopWeeabo
         private static void ShowUserInputPane(string headline, bool showScore, ListBoxItemForAnime instance)
         {
             ComboBox statusComboBox = (instance.grid.Children[3] as StackPanel).Children[1] as ComboBox;
-            TextBlock showMore = ((instance.grid.Children[3] as StackPanel).Children[2] as TextBlock);
+            TextBlock showMore;
+            if (instance.view == 2) {
+                showMore = ((instance.grid.Children[3] as StackPanel).Children[4] as TextBlock);
+                TextBox currEp = ((instance.grid.Children[3] as StackPanel).Children[3] as TextBox);
+                currEp.IsEnabled = false;
+            }
+            else{
+                showMore = ((instance.grid.Children[3] as StackPanel).Children[2] as TextBlock);
+            }
+            
             statusComboBox.IsEnabled = false;
             showMore.Visibility = Visibility.Hidden;
             instance.grid.Children.RemoveAt(2);
@@ -634,7 +658,15 @@ namespace DesktopWeeabo
             else if(whichPanel == 3)
             {
                 grid.Children.Insert(3, SetRightStackPanel());
-            }            
+            }
+        }
+
+        private void TryAddingEmptyListBoxMessage()
+        {
+            if (listbox.Items.Count == 0)
+            {
+                listbox.Items.Add(new NotifitacationMessagesForListBox(listbox.ActualHeight, "You have not listed any animes as '" + viewingStatuses[view] + "'."));
+            }
         }
 
         void ComboBox_MouseWheel(object sender, MouseEventArgs e)

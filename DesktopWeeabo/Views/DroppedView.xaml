@@ -7,10 +7,10 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <TextBlock HorizontalAlignment="Left" Margin="0,3,0,0" TextWrapping="Wrap" Text="Search dropped animes:" VerticalAlignment="Top"/>
+        <TextBlock Style="{StaticResource ChangableTextBlock}" HorizontalAlignment="Left" Margin="0,3,0,0" TextWrapping="Wrap" Text="Search dropped animes:" VerticalAlignment="Top"/>
         <TextBox Height="23" TextChanged="Search_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" Margin="133,0,0,0"/>
-        <ListBox Name="listBox" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch" Margin="0,52,0,0" HorizontalContentAlignment="Stretch"/>
-        <TextBlock HorizontalAlignment="Left" Margin="0,28,0,0" TextWrapping="Wrap" Text="Sort by: " VerticalAlignment="Top" TextAlignment="Center" Height="23"/>
+        <ListBox Style="{StaticResource ChangableListBox}" Name="listBox" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch" Margin="0,52,0,0" HorizontalContentAlignment="Stretch"/>
+        <TextBlock Style="{StaticResource ChangableTextBlock}" HorizontalAlignment="Left" Margin="0,28,0,0" TextWrapping="Wrap" Text="Sort by: " VerticalAlignment="Top" TextAlignment="Center" Height="23"/>
         <ComboBox Name="orderByComboBox" HorizontalAlignment="Left" Margin="49,28,0,0" VerticalAlignment="Top" Width="80" SelectionChanged="SortByComboBox_SelectionChanged">
             <ComboBoxItem Content="Title" HorizontalAlignment="Left" Width="80"/>
             <ComboBoxItem Content="English" HorizontalAlignment="Left" Width="80"/>
@@ -22,6 +22,6 @@
             <ComboBoxItem Content="Start date" HorizontalAlignment="Left" Width="80"/>
             <ComboBoxItem Content="End date" HorizontalAlignment="Left" Width="80"/>
         </ComboBox>
-        <CheckBox Name="descendingOrderByCheckBox" Content="Descending" HorizontalAlignment="Left" Margin="141,28,0,0" VerticalAlignment="Top" FlowDirection="RightToLeft" Checked="CheckBoxChanged" Unchecked="CheckBoxChanged"/>
+        <CheckBox Style="{StaticResource ChangableCheckBox}" Name="descendingOrderByCheckBox" Content="Descending" HorizontalAlignment="Left" Margin="141,28,0,0" VerticalAlignment="Top" FlowDirection="RightToLeft" Checked="CheckBoxChanged" Unchecked="CheckBoxChanged"/>
     </Grid>
 </UserControl>

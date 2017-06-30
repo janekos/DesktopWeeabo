@@ -5,34 +5,42 @@
              xmlns:local="clr-namespace:DesktopWeeabo"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <SolidColorBrush x:Key="AppColor" Color="Transparent"/>
-        <SolidColorBrush x:Key="AppColorOpacic" Color="Red" Opacity="0.2"/>
+        <SolidColorBrush x:Key="AppColor"/>
+        <SolidColorBrush x:Key="AppColorOpacic"/>
+        <SolidColorBrush x:Key="AppColorForText"/>
+        <SolidColorBrush x:Key="AppColorForListBox" Color="White" Opacity="0.4"/>
         <Style TargetType="{x:Type ComboBox}">
             <Setter Property="BorderBrush" Value="Black" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Background" Value="White" />
             <Setter Property="Padding" Value="3,1,3,1" />
             <Style.Resources>
-                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Green"/>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="LightGray"/>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black"/>
             </Style.Resources>
         </Style>
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="BorderBrush" Value="Black" />
             <Setter Property="Padding" Value="3,1,3,1" />
         </Style>
-        <Style TargetType="{x:Type Separator}">
-            <Setter Property="Background" Value="{DynamicResource AppColor}" />
+        <Style x:Key="ChangableTextBlock" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{DynamicResource AppColorForText}" />
         </Style>
-        <Style x:Key="ChangableListBoxItem" TargetType="{x:Type ListBoxItem}">
-            <Setter Property="BorderBrush" Value="{DynamicResource AppColor}" />
-            <Setter Property="Background" Value="{DynamicResource AppColorOpacic}" />
-            <Setter Property="BorderThickness" Value="0,0,0,0"/>
+        <Style x:Key="ChangableLabel" TargetType="{x:Type Label}">
+            <Setter Property="Background" Value="{DynamicResource AppColor}" />
+            <Setter Property="Foreground" Value="{DynamicResource AppColorForText}" />
+        </Style>
+        <Style x:Key="ChangableCheckBox" TargetType="{x:Type CheckBox}">
+            <Setter Property="Foreground" Value="{DynamicResource AppColorForText}" />
+        </Style>
+        <Style x:Key="ChangableListBox" TargetType="{x:Type ListBox}">
+            <Setter Property="Background" Value="{DynamicResource AppColorForListBox}" />
+        </Style>
+        <Style TargetType="{x:Type Separator}">
+            <Setter Property="Background" Value="{DynamicResource AppColorForText}" />
         </Style>
         <Style x:Key="ChangableGrid" TargetType="{x:Type Grid}">
             <Setter Property="Background" Value="{DynamicResource AppColor}" />
-        </Style>
-        <Style TargetType="{x:Type ListBox}">
-            <Setter Property="BorderThickness" Value="0"/>
         </Style>
         <Style TargetType="{x:Type Button}">
             <Setter Property="Background" Value="White" />

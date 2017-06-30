@@ -89,8 +89,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ConfigClass.cs" />
+    <Compile Include="CustomComboBox.xaml.cs">
+      <DependentUpon>CustomComboBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ListBoxItemForAnime.cs" />
     <Compile Include="NotifitacationMessagesForListBox.cs" />
+    <Compile Include="ProgramColorChangingClass.cs" />
     <Compile Include="RepeatingViewFunctions.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\DroppedViewModel.cs" />
@@ -118,6 +122,10 @@
       <DependentUpon>WatchingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewVariables.cs" />
+    <Page Include="CustomComboBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -184,9 +192,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\tag.png" />
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4.5.2 %28x86 and x64%29</ProductName>
@@ -197,6 +202,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\tag.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

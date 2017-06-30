@@ -15,6 +15,8 @@ namespace DesktopWeeabo
         {
             HorizontalAlignment = HorizontalAlignment.Stretch;
             Height = height-10;
+            Foreground = Application.Current.Resources["AppColorForText"] as SolidColorBrush;
+            BorderThickness = new Thickness(0);
             Content = SetMessage(message);
         }
 

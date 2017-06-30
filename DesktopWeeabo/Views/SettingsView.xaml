@@ -6,11 +6,12 @@
              xmlns:local="clr-namespace:DesktopWeeabo"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Background="White">
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="SETTINGS" VerticalAlignment="Top" FontSize="30" Height="35" Padding="0,0,0,0" Margin="10,0,0,0"/>
-        <TextBlock Name="explanationHeader" HorizontalAlignment="right" TextWrapping="Wrap" Text="EXPLANATION" VerticalAlignment="Top" FontSize="30" Height="35" Padding="0,0,0,0" Margin="0,1,10,0" Visibility="Hidden"/>
+    <Grid>
+        <TextBlock Style="{StaticResource ChangableTextBlock}" HorizontalAlignment="Left" TextWrapping="Wrap" Text="SETTINGS" VerticalAlignment="Top" FontSize="30" Height="35" Padding="0,0,0,0" Margin="10,0,0,0"/>
+        <TextBlock Style="{StaticResource ChangableTextBlock}" Name="explanationHeader" HorizontalAlignment="right" TextWrapping="Wrap" Text="EXPLANATION" VerticalAlignment="Top" FontSize="30" Height="35" Padding="0,0,0,0" Margin="0,1,10,0" Visibility="Hidden"/>
         <CheckBox 
-            Name="backUpCheckBox" 
+            Name="backUpCheckBox"
+            Style="{StaticResource ChangableCheckBox}"
             Content="Back up" 
             HorizontalAlignment="Left" 
             Margin="10,51,0,0" 
@@ -20,13 +21,14 @@
             Unchecked="CheckBoxChanged"
             MouseEnter="Element_MouseEnter"
             MouseLeave="Element_MouseLeave"
-            ToolTip="Every time you close this program it backs up all the animes that you have added to any of the lists. Everyday a separate backup file is made when you close the program."
+            ToolTip="Every time you close this program it backs up all the animes that you have added to any of the lists. Everyday a separate backup file is made when you close the program. The idea here is that if the program decides to have a laugh and delete the main save file or something, then you will atleast still have the backups. So all you would have to do to restore them is:&#x0a;1. to copy the backup you want restored&#x0a;2. paste it in the main directory&#x0a;3. rename it to 'MainEntries.xml'&#x0a;and that would do the trick."
             ToolTipService.IsEnabled="False"/>
         <Separator HorizontalAlignment="Stretch" Height="18" Margin="10,33,10,0" VerticalAlignment="Top"/>
-        <TextBlock Name="explanation" HorizontalAlignment="Right" Margin="0,46,12,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" MaxWidth="190" TextAlignment="Justify"/>
-        <TextBlock Name="backUpSaved" HorizontalAlignment="Left" Margin="91,51,0,0" TextWrapping="Wrap" Text="Saved!" VerticalAlignment="Top" Foreground="Red" Visibility="Hidden"/>
+        <TextBlock Style="{StaticResource ChangableTextBlock}" Name="explanation" HorizontalAlignment="Right" Margin="0,46,12,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" MaxWidth="190" TextAlignment="Justify"/>
+        <TextBlock Style="{StaticResource ChangableTextBlock}" Name="backUpSaved" HorizontalAlignment="Left" Margin="91,51,0,0" TextWrapping="Wrap" Text="Saved!" VerticalAlignment="Top" Visibility="Hidden"/>
         <TextBlock 
-            Name="colorTextBlock" 
+            Name="colorTextBlock"
+            Style="{StaticResource ChangableTextBlock}"
             HorizontalAlignment="Left" 
             Margin="10,70,0,0" 
             TextWrapping="Wrap" 
@@ -49,14 +51,17 @@
             MouseLeave="Element_MouseLeave" 
             ToolTip="Here you can select this program's color." 
             ToolTipService.IsEnabled="False">
-            <ComboBoxItem Content="#FFFF0000" Background="#FFFF0000"/>
+            <ComboBox.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="White"/>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black"/>
+            </ComboBox.Resources>
             <ComboBoxItem Content="#FF008000" Background="#FF008000"/>
-            <ComboBoxItem Content="#FFFFFF00" Background="#FFFFFF00"/>
             <ComboBoxItem Content="#FFFFA500" Background="#FFFFA500"/>
             <ComboBoxItem Content="#FFFFC0CB" Background="#FFFFC0CB"/>
             <ComboBoxItem Content="#FFADD8E6" Background="#FFADD8E6"/>
             <ComboBoxItem Content="#FF931515" Background="#FF931515"/>
+            <ComboBoxItem Content="#FFD3D3D3" Background="#FFD3D3D3"/>
         </ComboBox>
-        <TextBlock Name="colorSaved" HorizontalAlignment="Left" Margin="192,73,0,0" TextWrapping="Wrap" Text="Saved!" VerticalAlignment="Top" Foreground="Red" Visibility="Hidden"/>
+        <TextBlock Style="{StaticResource ChangableTextBlock}" Name="colorSaved" HorizontalAlignment="Left" Margin="192,73,0,0" TextWrapping="Wrap" Text="Saved!" VerticalAlignment="Top" Visibility="Hidden"/>
     </Grid>
 </UserControl>

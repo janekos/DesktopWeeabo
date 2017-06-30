@@ -9,13 +9,13 @@ namespace DesktopWeeabo
     {
         public MainWindow()
         {
+            ConfigClass.SetVariables();
+            ProgramColorChangingClass.ChangeColors();
             InitializeComponent();
             ItemHandler.ManageSettings();
             DataContext = new NavigationViewModel();
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
             Search.IsTabStop = true;
-            ConfigClass.SetVariables();
-            Application.Current.Resources["AppColor"] = ConfigClass.Color;            
         }
 
         private void SelectedButton(object sender, RoutedEventArgs e)

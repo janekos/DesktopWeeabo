@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="DesktopWeeabo.CustomComboBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DesktopWeeabo"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <Style x:Key="Item" TargetType="Label">
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="BorderThickness" Value="0,0.2,0,0"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Margin" Value="1,0,1,1"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="LightGray"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <!--<Border BorderBrush="Black" BorderThickness="1" Background="White">
+            <Grid>
+                <TextBlock Name="ArrowDown" HorizontalAlignment="Right" Text="▼" Width="11" VerticalAlignment="Center" Height="18" Padding="1,2,1,2" MouseLeftButtonDown="ShowDropDown" FontSize="10" Background="White"/>
+                <Label Name="SelectedItem" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Padding="2,1,0,1" MouseLeftButtonDown="ShowDropDown" BorderThickness="0" Margin="0,0,11,0"/>
+                <Border Name="ItemStackPanel" BorderBrush="Black" BorderThickness="1" Visibility="Collapsed" Margin="-1,18,-1,-18">
+                    <StackPanel Name="PanelItSelf" Background="White">
+                        <StackPanel.Resources>
+                            <Style BasedOn="{StaticResource Item}" TargetType="{x:Type Label}" />
+                        </StackPanel.Resources>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>-->
+    </Grid>
+</UserControl>

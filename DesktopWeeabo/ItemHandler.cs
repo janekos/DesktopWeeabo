@@ -140,6 +140,7 @@ namespace DesktopWeeabo
                 settings.Root.Add(
                         new XElement("comment", "Wait! I seriously suggest not touching anything here. In case of fire just delete this file."),
                         new XElement("backup", "true"),
+                        new XElement("color", "#FF931515"),
                         new XElement("towatch",
                             new XElement("orderby", "Title"),
                             new XElement("descendingorderby", "false")
