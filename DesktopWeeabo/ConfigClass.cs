@@ -11,6 +11,7 @@ namespace DesktopWeeabo
     public static class ConfigClass
     {
         private static bool backUp;
+        private static bool isProgramKill = false;
         private static SolidColorBrush color;
         private static ViewVariables toWatch;
         private static ViewVariables watched;
@@ -19,6 +20,7 @@ namespace DesktopWeeabo
         private static ViewVariables search;
 
         public static bool BackUp { get { return backUp; } set { backUp = value; } }
+        public static bool IsProgramKill { get { return isProgramKill; } set { isProgramKill = value; } }
         public static SolidColorBrush Color { get { return color; } set { color = value; } }
         public static ViewVariables ToWatch { get { return toWatch; } set { toWatch = value; } }
         public static ViewVariables Watched { get { return watched; } set { watched = value; } }
@@ -28,15 +30,30 @@ namespace DesktopWeeabo
 
         public static void SetVariables()
         {
-            XDocument conf = ItemHandler.ManageSettings();
-            XElement root = conf.Root;
-            backUp = Convert.ToBoolean(root.Element("backup").Value);
-            color = (SolidColorBrush)new BrushConverter().ConvertFromString(root.Element("color").Value);
-            toWatch = new ViewVariables("towatch", root.Element("towatch").Element("orderby").Value, Convert.ToBoolean(root.Element("towatch").Element("descendingorderby").Value));
-            watched = new ViewVariables("watched", root.Element("watched").Element("orderby").Value, Convert.ToBoolean(root.Element("watched").Element("descendingorderby").Value));
-            watching = new ViewVariables("watching", root.Element("watching").Element("orderby").Value, Convert.ToBoolean(root.Element("watching").Element("descendingorderby").Value));
-            dropped = new ViewVariables("dropped", root.Element("dropped").Element("orderby").Value, Convert.ToBoolean(root.Element("dropped").Element("descendingorderby").Value));
-            search = new ViewVariables("search", root.Element("search").Element("orderby").Value, Convert.ToBoolean(root.Element("search").Element("descendingorderby").Value));
+            try
+            {
+                XDocument conf = ItemHandler.ManageSettings();
+                if (conf != null)
+                {
+                    XElement root = conf.Root;
+                    backUp = Convert.ToBoolean(root.Element("backup").Value);
+                    color = (SolidColorBrush)new BrushConverter().ConvertFromString(root.Element("color").Value);
+                    toWatch = new ViewVariables("towatch", root.Element("towatch").Element("orderby").Value, Convert.ToBoolean(root.Element("towatch").Element("descendingorderby").Value));
+                    watched = new ViewVariables("watched", root.Element("watched").Element("orderby").Value, Convert.ToBoolean(root.Element("watched").Element("descendingorderby").Value));
+                    watching = new ViewVariables("watching", root.Element("watching").Element("orderby").Value, Convert.ToBoolean(root.Element("watching").Element("descendingorderby").Value));
+                    dropped = new ViewVariables("dropped", root.Element("dropped").Element("orderby").Value, Convert.ToBoolean(root.Element("dropped").Element("descendingorderby").Value));
+                    search = new ViewVariables("search", root.Element("search").Element("orderby").Value, Convert.ToBoolean(root.Element("search").Element("descendingorderby").Value));
+                }
+                else
+                {
+                    isProgramKill = true;
+                }           
+            }
+            catch
+            {
+                isProgramKill = true;
+            }
+            
         }
 
         public static void SaveVariables()

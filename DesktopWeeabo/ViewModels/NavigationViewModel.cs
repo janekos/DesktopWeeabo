@@ -79,8 +79,7 @@ namespace DesktopWeeabo.ViewModels
         private Action<object> _method;
         public event EventHandler CanExecuteChanged;
 
-        public BaseCommand(Action<object> method)
-            : this(method, null)
+        public BaseCommand(Action<object> method) : this(method, null)
         {
         }
 
@@ -92,17 +91,10 @@ namespace DesktopWeeabo.ViewModels
 
         public bool CanExecute(object parameter)
         {
-            if (_canExecute == null)
-            {
-                return true;
-            }
-
+            if (_canExecute == null){ return true; }
             return _canExecute(parameter);
         }
 
-        public void Execute(object parameter)
-        {
-            _method.Invoke(parameter);
-        }
+        public void Execute(object parameter){ _method.Invoke(parameter); }
     }
 }

@@ -10,12 +10,20 @@ namespace DesktopWeeabo
         public MainWindow()
         {
             ConfigClass.SetVariables();
-            ProgramColorChangingClass.ChangeColors();
-            InitializeComponent();
-            ItemHandler.ManageSettings();
-            DataContext = new NavigationViewModel();
-            System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
-            Search.IsTabStop = true;
+            if (!ConfigClass.IsProgramKill)
+            {
+                ProgramColorChangingClass.ChangeColors();
+                InitializeComponent();
+                ItemHandler.ManageSettings();
+                DataContext = new NavigationViewModel();
+                System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
+                Search.IsTabStop = true;
+            }
+            else
+            {
+                InitializeComponent();
+                theProgramIsKill.Visibility = Visibility.Visible;
+            }         
         }
 
         private void SelectedButton(object sender, RoutedEventArgs e)
@@ -32,8 +40,11 @@ namespace DesktopWeeabo
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            ItemHandler.CreateBackUp();
-            ConfigClass.SaveVariables();
+            if (!ConfigClass.IsProgramKill)
+            {
+                ItemHandler.CreateBackUp();
+                ConfigClass.SaveVariables();
+            }
         }
 
         private void About_Click(object sender, RoutedEventArgs e)

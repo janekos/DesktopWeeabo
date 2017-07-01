@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace DesktopWeeabo
+namespace DesktopWeeabo.CustomControls
 {
     class NotifitacationMessagesForListBox : ListBoxItem
     {
@@ -17,6 +17,7 @@ namespace DesktopWeeabo
             Height = height-10;
             Foreground = Application.Current.Resources["AppColorForText"] as SolidColorBrush;
             BorderThickness = new Thickness(0);
+            Focusable = false;
             Content = SetMessage(message);
         }
 

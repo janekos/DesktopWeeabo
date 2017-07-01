@@ -24,6 +24,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
+    <ProductName>Desktop Weeabo</ProductName>
+    <PublisherName>Janek Kossinski</PublisherName>
     <ApplicationRevision>1</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
@@ -62,6 +64,9 @@
   <PropertyGroup>
     <SignManifests>true</SignManifests>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>DesktopWeeabo.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -89,11 +94,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ConfigClass.cs" />
-    <Compile Include="CustomComboBox.xaml.cs">
+    <Compile Include="CustomControls\CustomComboBox.xaml.cs">
       <DependentUpon>CustomComboBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ListBoxItemForAnime.cs" />
-    <Compile Include="NotifitacationMessagesForListBox.cs" />
+    <Compile Include="CustomControls\ListBoxItemForAnime.cs" />
+    <Compile Include="CustomControls\NotifitacationMessagesForListBox.cs" />
     <Compile Include="ProgramColorChangingClass.cs" />
     <Compile Include="RepeatingViewFunctions.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
@@ -122,7 +127,7 @@
       <DependentUpon>WatchingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewVariables.cs" />
-    <Page Include="CustomComboBox.xaml">
+    <Page Include="CustomControls\CustomComboBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -205,6 +210,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\tag.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\cat8.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

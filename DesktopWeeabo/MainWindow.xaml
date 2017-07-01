@@ -39,7 +39,7 @@
     </i:Interaction.Triggers>
 
     <Grid Style="{StaticResource ChangableGrid}">
-        <Image Source="c:\users\mc janek\documents\visual studio 2017\Projects\DesktopWeeabo\DesktopWeeabo\Resources\tag.png" HorizontalAlignment="Left" Height="67" Margin="10,10,0,0" VerticalAlignment="Top" Width="110"/>
+        <Image Source="pack://application:,,,/Resources/tag.png" HorizontalAlignment="Left" Height="67" Margin="10,10,0,0" VerticalAlignment="Top" Width="110"/>
         <Grid Margin="10,87,0,10" Width="110" HorizontalAlignment="Left" >
             <Button Name="Search" Content="SEARCH" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="90" Command="{Binding SearchCommand}" Click="SelectedButton"/>
             <Button Name="ToWatch" Content="TO WATCH" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" Width="90" Command="{Binding ToWatchCommand}" Click="SelectedButton"/>
@@ -49,10 +49,12 @@
             <Button Name="Settings" Content="SETTINGS" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="90" Command="{Binding SettingsCommand}" Click="SelectedButton" Margin="10,0,0,37"/>
             <Button Name="About" Content="ABOUT" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="90" Click="About_Click" Margin="10,0,0,10"/>
         </Grid>
-        <!--<local:CustomComboBox VerticalAlignment="Top" HorizontalAlignment="Center" Margin="420,57,297,0" ThisSelectedIndexProperty="0" Width="75">
-            <Label Content="hi"/>
-            <Label Content="asd"/>
-        </local:CustomComboBox>-->
         <ContentControl x:Name="Pages" Content="{Binding SelectedViewModel}" Margin="125,10,10,10"/>
+        <Label Name="theProgramIsKill"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Background="White" Visibility="Collapsed">
+            <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <Image Source="pack://application:,,,/Resources/cat8.jpg" Height="247" VerticalAlignment="Top" Margin="0,0,0,-18"/>
+                <TextBlock FontSize="22" VerticalAlignment="Center" Margin="40,282,40,-112" TextWrapping="Wrap" TextAlignment="Center">Hey, good job messing up that Config.xml file. Just delete it or undo what you changed and everything should be back to normal.</TextBlock>
+            </Grid>
+        </Label>
     </Grid>
 </Window>

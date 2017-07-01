@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DesktopWeeabo.CustomControls;
+using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Xml.Linq;
 
@@ -20,31 +10,34 @@ namespace DesktopWeeabo.Views
     public partial class SearchView : UserControl
     {
 
-        private System.Windows.Threading.DispatcherTimer typingTimer, ComboBoxTimer, CheckBoxTimer;
+        private DispatcherTimer typingTimer, ComboBoxTimer, CheckBoxTimer;
         private string queryMem = "";
         private string orderByMem;
         private bool wasItemChangedBySystem = false;
 
         public SearchView()
         {
-            InitializeComponent();
-            wasItemChangedBySystem = true;
-            for (var i = 0; i < 10; i++)
+            if (!ConfigClass.IsProgramKill)
             {
-                if ((orderByComboBox.Items[i] as ComboBoxItem).Content.ToString() == ConfigClass.Search.OrderBy)
+                InitializeComponent();
+                wasItemChangedBySystem = true;
+                for (var i = 0; i < 10; i++)
                 {
-                    orderByComboBox.SelectedIndex = i;
-                    break;
+                    if ((orderByComboBox.Items[i] as ComboBoxItem).Content.ToString() == ConfigClass.Search.OrderBy)
+                    {
+                        orderByComboBox.SelectedIndex = i;
+                        break;
+                    }
                 }
-            }
-            if (orderByComboBox.SelectedIndex == 0) { descendingOrderByCheckBox.IsEnabled = false; }
-            descendingOrderByCheckBox.IsChecked = ConfigClass.Search.Descending;
-            wasItemChangedBySystem = false;
+                if (orderByComboBox.SelectedIndex == 0) { descendingOrderByCheckBox.IsEnabled = false; }
+                descendingOrderByCheckBox.IsChecked = ConfigClass.Search.Descending;
+                wasItemChangedBySystem = false;
 
-            Loaded += delegate
-            {
-                listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "Try searching for something above."));
-            };
+                Loaded += delegate
+                {
+                    listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "Try searching for something."));
+                };
+            }            
         }
 
         private void Search_TextChanged(object sender, EventArgs e)
@@ -60,7 +53,7 @@ namespace DesktopWeeabo.Views
                     else
                     {
                         listBox.Items.Clear();
-                        listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "Try searching for something above."));
+                        listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "Try searching for something."));
                         queryMem = "";
                     }
                 };
@@ -123,52 +116,66 @@ namespace DesktopWeeabo.Views
                 XDocument localEntries = ItemHandler.MakeLocalSearch(queryMem);
                 string[] viewingStatuses = { "To Watch", "Watched", "Watching", "Dropped" };
 
-                if (!entries.Equals("Exception was thrown"))
+                if (localEntries != null)
                 {
-                    if (entries.Length > 0)
+                    if (!entries.Equals("Exception was thrown"))
                     {
-                        listBox.Items.Clear();
-                        XDocument response;
-                        if (orderBy.Equals("No sort")) { response = XDocument.Parse(entries); }
-                        else { response = SortEntries(XDocument.Parse(entries), orderByMem, descendingOrder); }
-                        foreach (var e in response.Descendants("entry"))
+                        if (entries.Length > 0)
                         {
-                            int view = -1;
-                            foreach (var el in localEntries.Descendants("entry"))
+                            listBox.Items.Clear();
+                            XDocument response;
+                            if (orderBy.Equals("No sort")) { response = XDocument.Parse(entries); }
+                            else { response = SortEntries(XDocument.Parse(entries), orderByMem, descendingOrder); }
+                            foreach (var e in response.Descendants("entry"))
                             {
-                                if (int.Parse(e.Element("id").Value) == int.Parse(el.Element("id").Value))
+                                int view = -1;
+                                foreach (var el in localEntries.Descendants("entry"))
                                 {
-                                    view = Array.IndexOf(viewingStatuses, el.Element("viewingstatus").Value);
-                                    listBox.Items.Add(new ListBoxItemForAnime(el, listBox, view, false));
-                                    break;
+                                    if (int.Parse(e.Element("id").Value) == int.Parse(el.Element("id").Value))
+                                    {
+                                        view = Array.IndexOf(viewingStatuses, el.Element("viewingstatus").Value);
+                                        listBox.Items.Add(new ListBoxItemForAnime(el, listBox, view, false));
+                                        break;
+                                    }
                                 }
+                                if (view == -1) { listBox.Items.Add(new ListBoxItemForAnime(e, listBox, view, false)); }
                             }
-                            if (view == -1) { listBox.Items.Add(new ListBoxItemForAnime(e, listBox, view, false)); }
+                        }
+                        else
+                        {
+                            listBox.Items.Clear();
+                            listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "No results for '" + query + "'."));
                         }
                     }
-                    else
+                    else if (entries.Equals("Exception was thrown"))
                     {
-                        listBox.Items.Clear();
-                        listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "No results"));
+                        BuildListBoxItems(query, orderBy, descendingOrder);
                     }
                 }
-                else if (entries.Equals("Exception was thrown"))
+                else
                 {
-                    BuildListBoxItems(query, orderBy, descendingOrder);
+                    listBox.Items.Clear();
+                    listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "Something is wrong with the 'MainEntries.xml' file. Consider switching in a back up."));
                 }
+                
             }
         }
 
         private XDocument SortEntries(XDocument entries, string orderBy, bool descendingOrder)
         {
             IOrderedEnumerable<XElement> sorted;
+            bool orderByNumber = false;
+            if (orderBy.Equals("Episodes") || orderBy.Equals("Score")) { orderByNumber = true; }
+
             if (descendingOrder)
             {
-                sorted = entries.Descendants("entry").OrderByDescending(p => p.Element(orderBy.ToLower().Replace(" ", "_")).Value);
+                if (orderByNumber) { sorted = entries.Descendants("entry").OrderByDescending(p => double.TryParse(p.Element(orderBy.ToLower().Replace(" ", "_")).Value, out double tmp)); }
+                else { sorted = entries.Descendants("entry").OrderByDescending(p => p.Element(orderBy.ToLower().Replace(" ", "_")).Value); }
             }
             else
             {
-                sorted = entries.Descendants("entry").OrderBy(p => p.Element(orderBy.ToLower().Replace(" ", "_")).Value);
+                if (orderByNumber) { sorted = entries.Descendants("entry").OrderBy(p => double.TryParse(p.Element(orderBy.ToLower().Replace(" ", "_")).Value, out double tmp)); }
+                else { sorted = entries.Descendants("entry").OrderBy(p => p.Element(orderBy.ToLower().Replace(" ", "_")).Value); }
             }
             XDocument doc = new XDocument(new XElement("anime", sorted));
             return doc;

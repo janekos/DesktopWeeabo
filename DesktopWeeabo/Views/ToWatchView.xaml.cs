@@ -25,7 +25,7 @@ namespace DesktopWeeabo.Views
         {
             InitializeComponent();
             wasItemChangedBySystem = true;
-            for (var i = 0; i < 9; i++)
+            for (var i = 0; i < 10; i++)
             {
                 if ((orderByComboBox.Items[i] as ComboBoxItem).Content.ToString() == ConfigClass.ToWatch.OrderBy)
                 {

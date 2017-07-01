@@ -39,8 +39,16 @@ namespace DesktopWeeabo
         public static XDocument MakeLocalSearch(string query, string viewingStatus = "")
         {
             CheckAndCreateDirAndFile();
-
-            XDocument doc = XDocument.Load(path + "/MainEntries.xml");
+            XDocument doc = null;
+            try
+            {
+                doc = XDocument.Load(path + "/MainEntries.xml");
+            }
+            catch
+            {
+                return null;
+            }
+            
             XDocument result = new XDocument(new XElement("anime"));
             int queryLen = query.Length;
             int viewingStatusLen = viewingStatus.Length;
@@ -76,7 +84,7 @@ namespace DesktopWeeabo
             return result;
         }
 
-        public static void UpdateSaveFile(XElement itemToModify, string viewingStatus, string userReview = "", string userScore="", string userDropReason="", string currEpisode="", bool remove = false)
+        public static void UpdateSaveFile(XElement itemToModify, string viewingStatus, string userReview = null, string userScore = null, string userDropReason = null, string currEpisode = null, string watchingPriority = null, bool remove = false)
         {
             CheckAndCreateDirAndFile();
 
@@ -94,13 +102,13 @@ namespace DesktopWeeabo
                     else
                     {
                         e.Element("viewingstatus").Value = viewingStatus;
-                        e.Element("review").Value = userReview.Length > 0 ? userReview: "";
-                        e.Element("personal_score").Value = userScore.Length > 0 ? userScore : "";
-                        e.Element("dropreason").Value = userDropReason.Length > 0 ? userDropReason : "";
-                        e.Element("currepisode").Value = currEpisode.Length > 0 ? currEpisode : "";
+                        if (userReview != null) { e.Element("review").Value = userReview; }
+                        if (userScore != null) { e.Element("personal_score").Value = userScore.Length > 0 ? userScore: "-1"; }
+                        if (userDropReason != null) { e.Element("dropreason").Value = userDropReason; }
+                        if (currEpisode != null) { e.Element("currepisode").Value = currEpisode; }
+                        if (watchingPriority != null) { e.Element("watch_priority").Value = watchingPriority.Length > 0 ? watchingPriority : "-1"; }
                     }                    
                     entryExists = true;
-
                     break;
                 }
             }
@@ -109,10 +117,11 @@ namespace DesktopWeeabo
             {
                 itemToModify.Add(
                     new XElement("viewingstatus", viewingStatus),
-                    new XElement("review", userReview),
-                    new XElement("personal_score", userScore),
-                    new XElement("dropreason", userDropReason),
-                    new XElement("currepisode", currEpisode)
+                    new XElement("review", userReview != null ? userReview : ""),
+                    new XElement("personal_score", userScore != null ? userScore : "-1"),
+                    new XElement("dropreason", userDropReason != null ? userDropReason : ""),
+                    new XElement("currepisode", currEpisode != null ? currEpisode : ""),
+                    new XElement("watch_priority", watchingPriority != null ? watchingPriority : "-1")
                 );
                 doc.Root.Add(itemToModify);
             }
@@ -132,8 +141,16 @@ namespace DesktopWeeabo
         public static XDocument ManageSettings(string backUp = "", SolidColorBrush color = null, ViewVariables towatch = null, ViewVariables watched = null, ViewVariables watching = null, ViewVariables dropped = null, ViewVariables search = null)
         {
             CheckAndCreateDirAndFile();
-
-            XDocument settings = XDocument.Load(path + "/Config.xml");
+            XDocument settings = null;
+            try
+            {
+                settings = XDocument.Load(path + "/Config.xml");
+            }
+            catch
+            {
+                return null;
+            }
+            
             XElement root = settings.Root;
             if (!root.Elements().Any())
             {

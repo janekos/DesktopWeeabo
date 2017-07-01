@@ -7,8 +7,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Xml.Linq;
+using System.Diagnostics;
 
-namespace DesktopWeeabo
+namespace DesktopWeeabo.CustomControls
 {
     class ListBoxItemForAnime : ListBoxItem
     {
@@ -16,10 +17,10 @@ namespace DesktopWeeabo
         private XElement animeEntryXML;
         private ListBox listbox;
         private int view;
-        private string userInputTextReview, userInputTextDrop, userScoreInputText, currEpisode;
+        private string userInputTextReview, userInputTextDrop, userScoreInputText, currEpisode, watchingPriority;
         private Grid grid;
         private string[] viewingStatuses = { "To Watch", "Watched", "Watching", "Dropped" };
-        private DispatcherTimer currEpisodeErrorDispatcherTimer, currEpisodeSaveDispatcherTimer;
+        private DispatcherTimer specialBoxErrorDispatcherTimer, specialBoxSaveDispatcherTimer;
 
         public ListBoxItemForAnime(XElement _e, ListBox _listbox, int _view, bool _listBoxItemRemovalAllowance)
         {
@@ -29,19 +30,40 @@ namespace DesktopWeeabo
             animeEntryXML = _e;
 
             userInputTextReview = animeEntryXML.Element("review") != null ? (string)(animeEntryXML.Element("review")) : "";
-            userScoreInputText = animeEntryXML.Element("personal_score") != null ? (string)(animeEntryXML.Element("personal_score")) : "";
             userInputTextDrop = animeEntryXML.Element("dropreason") != null ? (string)(animeEntryXML.Element("dropreason")) : "";
             currEpisode = animeEntryXML.Element("currepisode") != null ? (string)(animeEntryXML.Element("currepisode")) : "";
-
-            grid = SetGrid();
-
-            if (view == 2) { SetDispatcherTimers(); }
+            try
+            {
+                userScoreInputText = animeEntryXML.Element("personal_score") != null && double.Parse(animeEntryXML.Element("personal_score").Value) != -1 ? (string)(animeEntryXML.Element("personal_score")) : "";
+                watchingPriority = animeEntryXML.Element("watch_priority") != null && double.Parse(animeEntryXML.Element("watch_priority").Value) != -1 ? (string)(animeEntryXML.Element("watch_priority")) : "";
+                grid = SetGrid();
+                Content = grid;
+            }
+            catch
+            {
+                VerticalContentAlignment = VerticalAlignment.Center;
+                HorizontalContentAlignment = HorizontalAlignment.Center;
+                Content = SetYouDoneGoofed();
+            }
 
             Height = 140;
             BorderBrush = Brushes.Black;
             BorderThickness = new Thickness(0,0,0,1);
             Focusable = false;
-            Content = grid;
+            
+        }
+
+        private TextBlock SetYouDoneGoofed()
+        {
+            return new TextBlock()
+            {
+                Text = $"Entry ID = {animeEntryXML.Element("id").Value}. Either you messed with this particual entry in the xml file or something has gone wrong. If you think this is a bug, then please report it in my github, which you can find by pressing 'About' button. Please explain there what you changed to cause this outcome. Consider adding your xml there as well.",
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(15, 0, 15, 0),
+                FontSize = 14,
+                Foreground = Application.Current.Resources["AppColorForText"] as SolidColorBrush,
+                TextAlignment = TextAlignment.Justify
+            };
         }
 
         private Image SetCoverImage(string imgUrl)
@@ -100,7 +122,7 @@ namespace DesktopWeeabo
             {
                 Text = userScoreInputText,
                 Width = 60,
-                Margin = new Thickness(0, 0, 10, 0)
+                Margin = new Thickness(4, 0, 10, 0)
             };
             tb.KeyUp += KeyUp_UserScoreInputTextBox;
             return tb;
@@ -234,7 +256,6 @@ namespace DesktopWeeabo
                 bool scoreCondition = userScoreInputText.Length > 0;
                 string userReviewTextBlock = reviewCondition ? userInputTextReview : "You haven't written a review for this anime.";
                 string userScoreTextBlock = scoreCondition ? userScoreInputText : "You haven't scored this anime.";
-                
                 sp.Children.Insert(0, SetUserReviewText("Personal review: ", userReviewTextBlock, SetAddChange("Your personal review: ", true, Visibility.Visible)));
                 sp.Children.Insert(1, SetReviewPersonalScore(userScoreTextBlock));
             }
@@ -297,19 +318,18 @@ namespace DesktopWeeabo
             return cb;
         }
 
-        private TextBlock SetCurrEpisodeTitle()
+        private TextBlock SetSpecialTitle(string title)
         {
             return new TextBlock()
             {
                 Margin = new Thickness(0, 0, 0, 4),
                 FontWeight = FontWeights.Bold,
-                Text = "Current episode:",
+                Text = title,
                 Foreground = Application.Current.Resources["AppColorForText"] as SolidColorBrush
             };
         }
 
-
-        private TextBox SetCurrEpisodeTextBox(string text)
+        private TextBox SetSpecialTextBox(string text)
         {
             TextBox tb =  new TextBox()
             {
@@ -317,12 +337,12 @@ namespace DesktopWeeabo
                 Width = 40,
                 Text = text
             };
-            tb.TextChanged += TextChanged_CurrEpisodeTextBox;
+            tb.TextChanged += TextChanged_SpecialTextBox;
             tb.LostFocus += LostFocus_CurrEpisodeTextBox;
             return tb;
         }
 
-        private Label SetCurrEpisodeErrMsg()
+        private Label SetSpecialErrMsg()
         {
             return new Label
             {
@@ -362,8 +382,13 @@ namespace DesktopWeeabo
             sp.Children.Add(SetStatusComboBox());
             if (view == 2)
             {
-                sp.Children.Add(SetCurrEpisodeTitle());
-                sp.Children.Add(SetCurrEpisodeTextBox(currEpisode.Length > 0 ? currEpisode : "0"));
+                sp.Children.Add(SetSpecialTitle("Current episode:"));
+                sp.Children.Add(SetSpecialTextBox(currEpisode.Length > 0 ? currEpisode : "0"));
+            }
+            else if (view == 0)
+            {
+                sp.Children.Add(SetSpecialTitle("Watch priority:"));
+                sp.Children.Add(SetSpecialTextBox(watchingPriority.Length > 0 ? watchingPriority : "0"));
             }
             sp.Children.Add(SetShowMoreText());
             return sp;
@@ -376,40 +401,23 @@ namespace DesktopWeeabo
             g.Children.Add(SetAnimeTitle((string)(animeEntryXML.Element("title"))));
             g.Children.Add(SetMiddleStackPanel());
             g.Children.Add(SetRightStackPanel());
-            if(view == 2) { g.Children.Add(SetCurrEpisodeErrMsg()); }            
+            g.Children.Add(SetSpecialErrMsg());           
 
             return g;
         }
 
-        private void SetDispatcherTimers()
-        {
-            Label toast = grid.Children[4] as Label;
-            TextBox currEpisodeFromTb = (grid.Children[3] as StackPanel).Children[3] as TextBox;
-
-            currEpisodeErrorDispatcherTimer = new DispatcherTimer();
-            currEpisodeErrorDispatcherTimer.Interval = TimeSpan.FromMilliseconds(3000);
-            currEpisodeErrorDispatcherTimer.Tick += (o, s) =>
-            {
-                currEpisodeErrorDispatcherTimer.Stop();
-                toast.Visibility = Visibility.Collapsed;
-            };
-
-            currEpisodeSaveDispatcherTimer = new DispatcherTimer();
-            currEpisodeSaveDispatcherTimer.Interval = TimeSpan.FromMilliseconds(500);
-            currEpisodeSaveDispatcherTimer.Tick += (o, s) =>
-            {
-                currEpisodeSaveDispatcherTimer.Stop();
-                ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatuses[2], "", "", "", currEpisodeFromTb.Text.ToString());
-            };
-        }
-
         private void UserInputCancel_Click(object sender, RoutedEventArgs e) {
-            TextBlock showMore = (grid.Children[3] as StackPanel).Children[2] as TextBlock;
+            TextBlock showMore;
             ComboBox statusComboBox = (grid.Children[3] as StackPanel).Children[1] as ComboBox;
-            if(view == 2)
+            if(view == 2 || view == 0)
             {
-                TextBox currEp = ((grid.Children[3] as StackPanel).Children[3] as TextBox);
-                currEp.IsEnabled = true;
+                TextBox specialBox = ((grid.Children[3] as StackPanel).Children[3] as TextBox);
+                showMore = (grid.Children[3] as StackPanel).Children[4] as TextBlock;
+                specialBox.IsEnabled = true;
+            }
+            else
+            {
+                showMore = (grid.Children[3] as StackPanel).Children[2] as TextBlock;
             }
             showMore.Visibility = Visibility.Visible;
             grid.Children.RemoveAt(2);
@@ -428,7 +436,6 @@ namespace DesktopWeeabo
             TextBox userScoreInputTextBox = ((grid.Children[2] as StackPanel).Children[2] as StackPanel).Children[1] as TextBox;
             int selectedComboBoxItemIndex = statusComboBox.Items.IndexOf(statusComboBox.SelectedItem);
             string viewingStatusString = (string)(statusComboBox.SelectedItem as ComboBoxItem).Content;
-            userScoreInputText = "";
             if (selectedComboBoxItemIndex == 1) {
                 userInputTextReview = userInputTextBox.Text.Length > 0 ? userInputTextBox.Text : "";
                 userScoreInputText = userScoreInputTextBox.Text.Length > 0 ? userScoreInputTextBox.Text : "";
@@ -437,7 +444,7 @@ namespace DesktopWeeabo
             else if (selectedComboBoxItemIndex == 3)
             {
                 userInputTextDrop = userInputTextBox.Text.Length > 0 ? userInputTextBox.Text : "";
-                ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatusString, "", "", userInputTextDrop);
+                ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatusString, null, null, userInputTextDrop);
             }
             if (listBoxItemRemovalAllowance && ((view != 1 && selectedComboBoxItemIndex == 1) || (view != 3 && selectedComboBoxItemIndex == 3))) {
                 listbox.Items.Remove(this);
@@ -459,6 +466,20 @@ namespace DesktopWeeabo
                 int selectedViewingStatusInt = statusComboBox.Items.IndexOf(statusComboBox.SelectedItem);
                 switch (selectedViewingStatusInt)
                 {
+                    case 0:
+                        if (listBoxItemRemovalAllowance)
+                        {
+                            listbox.Items.Remove(this);
+                        }
+                        else
+                        {
+                            specialBoxErrorDispatcherTimer = null;
+                            specialBoxSaveDispatcherTimer = null;
+                            ReloadViewAndGrid(selectedViewingStatusInt, 2);
+                            ReloadViewAndGrid(selectedViewingStatusInt, 3);
+                        }
+                        ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatus);
+                        break;
                     case 1:
                         
                         if (userInputTextReview.Length > 0 || userScoreInputText.Length > 0)
@@ -478,6 +499,20 @@ namespace DesktopWeeabo
                         {
                             ShowUserInputPane("Your personal review: ", true, this);
                         }
+                        break;
+                    case 2:
+                        if (listBoxItemRemovalAllowance)
+                        {
+                            listbox.Items.Remove(this);
+                        }
+                        else
+                        {
+                            specialBoxErrorDispatcherTimer = null;
+                            specialBoxSaveDispatcherTimer = null;
+                            ReloadViewAndGrid(selectedViewingStatusInt, 2);
+                            ReloadViewAndGrid(selectedViewingStatusInt, 3);
+                        }
+                        ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatus);
                         break;
                     case 3:
                         if (userInputTextDrop.Length > 0)
@@ -509,23 +544,10 @@ namespace DesktopWeeabo
                         {
                             listbox.Items.Remove(this);
                         }
-                        ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatus, "", "", "", "",true);
+                        ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatus, null, null, null, null, null, true);
 
-                        break;
-                    default:
-                        if (listBoxItemRemovalAllowance)
-                        {
-                            listbox.Items.Remove(this);
-                        }
-                        else
-                        {
-                            ReloadViewAndGrid(selectedViewingStatusInt, 2);
-                            ReloadViewAndGrid(selectedViewingStatusInt, 3);
-                        }
-                        ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatus);
                         break;
                 }
-
                 TryAddingEmptyListBoxMessage();
             }
         }
@@ -549,34 +571,72 @@ namespace DesktopWeeabo
             }
         }
 
-        private void TextChanged_CurrEpisodeTextBox(object sender, EventArgs ea)
+        private void TextChanged_SpecialTextBox(object sender, EventArgs ea)
         {
-            TextBox currEpisodeTextBox = sender as TextBox;
+            TextBox specialTextBox = sender as TextBox;
             int maxEpisode = int.Parse(animeEntryXML.Element("episodes").Value);
             Label toast = grid.Children[4] as Label;
+            
+            bool isInt = int.TryParse(specialTextBox.Text, out int currEpisodeFromTb);
+            bool isEmpty = specialTextBox.Text.Length == 0 ? true : false;
 
-            bool isInt = int.TryParse(currEpisodeTextBox.Text, out int currEpisodeFromTb);
-
-            if ((isInt && (currEpisodeFromTb <= maxEpisode)) || currEpisodeTextBox.Text.Length == 0)
+            if (specialBoxSaveDispatcherTimer == null)
             {
-                    currEpisodeSaveDispatcherTimer.Stop();
-                    currEpisodeSaveDispatcherTimer.Start();
+                specialBoxSaveDispatcherTimer = new DispatcherTimer();
+                specialBoxSaveDispatcherTimer.Interval = TimeSpan.FromMilliseconds(500);
+                specialBoxSaveDispatcherTimer.Tick += (o, s) =>
+                {
+                    specialBoxSaveDispatcherTimer.Stop();
+                    if (isInt || isEmpty)
+                    {
+                        if (view == 2)
+                        {
+                            currEpisode = specialTextBox.Text.ToString();
+                            ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatuses[2], null, null, null, specialTextBox.Text.ToString());
+                            
+                        }
+                        else if (view == 0)
+                        {
+                            watchingPriority = specialTextBox.Text.ToString();
+                            ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatuses[0], null, null, null, null, specialTextBox.Text.ToString());
+                        }
+                                              
+                    }                    
+                };
+            }            
+
+            if (specialBoxErrorDispatcherTimer == null)
+            {
+                specialBoxErrorDispatcherTimer = new DispatcherTimer();
+                specialBoxErrorDispatcherTimer.Interval = TimeSpan.FromMilliseconds(3000);
+                specialBoxErrorDispatcherTimer.Tick += (o, s) =>
+                {
+                    specialBoxErrorDispatcherTimer.Stop();
+                    toast.Visibility = Visibility.Collapsed;
+                };
             }
-            else if (currEpisodeTextBox.Text.Length > 0)
+
+            specialBoxSaveDispatcherTimer.Stop();
+
+            if ((isInt && (currEpisodeFromTb <= maxEpisode)) || specialTextBox.Text.Length == 0 || (isInt && view == 0))
+            {
+                    specialBoxSaveDispatcherTimer.Start();
+            }
+            else if (specialTextBox.Text.Length > 0)
             {                
                 if (!isInt)
                 {
                     toast.Content = "Only numbers are allowed";
                 }
-                else if (currEpisodeFromTb >= maxEpisode)
+                else if (currEpisodeFromTb >= maxEpisode && view == 2)
                 {
                     toast.Content = $"This anime has only {maxEpisode} episodes";
                 }
                 if(toast.Visibility != Visibility.Visible)
                 {
                     toast.Visibility = Visibility.Visible;
-                    currEpisodeErrorDispatcherTimer.Stop();
-                    currEpisodeErrorDispatcherTimer.Start();
+                    specialBoxErrorDispatcherTimer.Stop();
+                    specialBoxErrorDispatcherTimer.Start();
                 }                
             }
         }
@@ -585,6 +645,11 @@ namespace DesktopWeeabo
         {
             Label toast = grid.Children[4] as Label;
             if (toast.Visibility != Visibility.Collapsed) { toast.Visibility = Visibility.Collapsed; }
+        }
+
+        private void ComboBox_MouseWheel(object sender, MouseEventArgs e)
+        {
+            e.Handled = true;
         }
 
         private static string CleanSynopsisText(string text)
@@ -607,7 +672,7 @@ namespace DesktopWeeabo
         private static void ExpandListItem(ListBoxItemForAnime instance)
         {
             StackPanel rightStackPanel = instance.grid.Children[3] as StackPanel;
-            TextBlock showMore = instance.view == 2 ? rightStackPanel.Children[4] as TextBlock : rightStackPanel.Children[2] as TextBlock;
+            TextBlock showMore = instance.view == 2 || instance.view == 0 ? rightStackPanel.Children[4] as TextBlock : rightStackPanel.Children[2] as TextBlock;
             if (instance.isListBoxItemExpanded == false)
             {
                 instance.Height = double.NaN;
@@ -667,11 +732,6 @@ namespace DesktopWeeabo
             {
                 listbox.Items.Add(new NotifitacationMessagesForListBox(listbox.ActualHeight, "You have not listed any animes as '" + viewingStatuses[view] + "'."));
             }
-        }
-
-        void ComboBox_MouseWheel(object sender, MouseEventArgs e)
-        {
-            e.Handled = true;
         }
     }
 }
