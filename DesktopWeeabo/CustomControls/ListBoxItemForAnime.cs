@@ -691,7 +691,7 @@ namespace DesktopWeeabo.CustomControls
         {
             ComboBox statusComboBox = (instance.grid.Children[3] as StackPanel).Children[1] as ComboBox;
             TextBlock showMore;
-            if (instance.view == 2) {
+            if (instance.view == 2 || instance.view == 0) {
                 showMore = ((instance.grid.Children[3] as StackPanel).Children[4] as TextBlock);
                 TextBox currEp = ((instance.grid.Children[3] as StackPanel).Children[3] as TextBox);
                 currEp.IsEnabled = false;

@@ -68,6 +68,7 @@ namespace DesktopWeeabo
             string[] viewingStatuses = { "To Watch", "Watched", "Watching", "Dropped" };
             orderByMem = orderBy.Length > 0 ? orderBy : orderByMem;
             XDocument localEntries = ItemHandler.MakeLocalSearch(query, viewingStatuses[view]);
+            System.Diagnostics.Debug.WriteLine(localEntries == null);
             if (localEntries != null)
             {
                 XDocument entries = SortEntries(listBox, localEntries, orderByMem, descendingOrder);
@@ -106,16 +107,23 @@ namespace DesktopWeeabo
 
             if (descendingOrder)
             {
-                if (orderByNumber){ sorted = entries.Descendants("entry").OrderByDescending(p => double.TryParse(p.Element(orderBy.ToLower().Replace(" ", "_")).Value, out double tmp)); }
+                if (orderByNumber){ sorted = entries.Descendants("entry").OrderByDescending(p => TryParsing(p.Element(orderBy.ToLower().Replace(" ", "_")).Value)); }
                 else{ sorted = entries.Descendants("entry").OrderByDescending(p => p.Element(orderBy.ToLower().Replace(" ", "_")).Value); }
             }
             else
             {
-                if (orderByNumber){ sorted = entries.Descendants("entry").OrderBy(p => double.TryParse(p.Element(orderBy.ToLower().Replace(" ", "_")).Value, out double tmp)); }
+                if (orderByNumber){ sorted = entries.Descendants("entry").OrderBy( p => TryParsing(p.Element(orderBy.ToLower().Replace(" ", "_")).Value)); }
                 else{ sorted = entries.Descendants("entry").OrderBy(p => p.Element(orderBy.ToLower().Replace(" ", "_")).Value); }
             }
             XDocument doc = new XDocument(new XElement("anime", sorted));
             return doc;
+        }
+
+        private double TryParsing(string item)
+        {
+            bool isDouble = double.TryParse(item, out double tmp);
+            if (isDouble) { return tmp; }
+            else { return 0; }
         }
     }
 }

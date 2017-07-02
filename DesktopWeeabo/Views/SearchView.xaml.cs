@@ -169,16 +169,23 @@ namespace DesktopWeeabo.Views
 
             if (descendingOrder)
             {
-                if (orderByNumber) { sorted = entries.Descendants("entry").OrderByDescending(p => double.TryParse(p.Element(orderBy.ToLower().Replace(" ", "_")).Value, out double tmp)); }
+                if (orderByNumber) { sorted = entries.Descendants("entry").OrderByDescending(p => TryParsing(p.Element(orderBy.ToLower().Replace(" ", "_")).Value)); }
                 else { sorted = entries.Descendants("entry").OrderByDescending(p => p.Element(orderBy.ToLower().Replace(" ", "_")).Value); }
             }
             else
             {
-                if (orderByNumber) { sorted = entries.Descendants("entry").OrderBy(p => double.TryParse(p.Element(orderBy.ToLower().Replace(" ", "_")).Value, out double tmp)); }
+                if (orderByNumber) { sorted = entries.Descendants("entry").OrderBy(p => TryParsing(p.Element(orderBy.ToLower().Replace(" ", "_")).Value)); }
                 else { sorted = entries.Descendants("entry").OrderBy(p => p.Element(orderBy.ToLower().Replace(" ", "_")).Value); }
             }
             XDocument doc = new XDocument(new XElement("anime", sorted));
             return doc;
+        }
+
+        private double TryParsing(string item)
+        {
+            bool isDouble = double.TryParse(item, out double tmp);
+            if (isDouble) { return tmp; }
+            else { return 0; }
         }
     }
 }
