@@ -24,8 +24,7 @@ Usage:
   * About view is just some mundane info about the creator and the program itself.
   
 Extra info:
-  * The program does not install itself in the Program Files directory, but instead in the appdata. Despite that you still get an entry in the Install/Uninstall programs bit in the console panel.
-  * The install only creates a shortcut in the start menu, so you have to copy it fro mthere on your desktop to access it.
+  * No install just run the program.
   * The program was written on win 7 and tested on win10 and win7. Win10 does not seem to require any additional .net packages. Not sure about Win7 yet.
   * Creator: Janek Kossinski
   * License: TBA
