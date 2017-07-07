@@ -68,7 +68,6 @@ namespace DesktopWeeabo
             string[] viewingStatuses = { "To Watch", "Watched", "Watching", "Dropped" };
             orderByMem = orderBy.Length > 0 ? orderBy : orderByMem;
             XDocument localEntries = ItemHandler.MakeLocalSearch(query, viewingStatuses[view]);
-            System.Diagnostics.Debug.WriteLine(localEntries == null);
             if (localEntries != null)
             {
                 XDocument entries = SortEntries(listBox, localEntries, orderByMem, descendingOrder);
@@ -76,9 +75,11 @@ namespace DesktopWeeabo
                 if (entries.Descendants("entry").Any())
                 {
                     listBox.Items.Clear();
+                    int count = 0;
                     foreach (var e in entries.Descendants("entry"))
                     {
                         listBox.Items.Add(new ListBoxItemForAnime(e, listBox, view, true));
+                        count++;
                     }
                 }
                 else if (!entries.Descendants("entry").Any() && query.Length == 0)

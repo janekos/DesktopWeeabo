@@ -41,8 +41,6 @@ namespace DesktopWeeabo.CustomControls
             }
             catch
             {
-                VerticalContentAlignment = VerticalAlignment.Center;
-                HorizontalContentAlignment = HorizontalAlignment.Center;
                 Content = SetYouDoneGoofed();
             }
 
@@ -53,17 +51,50 @@ namespace DesktopWeeabo.CustomControls
             
         }
 
-        private TextBlock SetYouDoneGoofed()
+        private StackPanel SetYouDoneGoofed()
         {
-            return new TextBlock()
+            StackPanel mainSP = new StackPanel()
             {
-                Text = $"Entry ID = {animeEntryXML.Element("id").Value}. Either you messed with this particual entry in the xml file or something has gone wrong. If you think this is a bug, then please report it in my github, which you can find by pressing 'About' button. Please explain there what you changed to cause this outcome. Consider adding your xml there as well.",
-                TextWrapping = TextWrapping.Wrap,
-                Margin = new Thickness(15, 0, 15, 0),
-                FontSize = 14,
-                Foreground = Application.Current.Resources["AppColorForText"] as SolidColorBrush,
-                TextAlignment = TextAlignment.Justify
+                Margin = new Thickness(10, 0, 10, 0),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top
             };
+
+            TextBlock reloadEntry = new TextBlock()
+            {
+                Text = "Reload entry (removes invalid variables)",
+                FontSize = 16,
+                Foreground = Brushes.Blue
+            };
+            reloadEntry.MouseLeftButtonDown += (o, s) =>
+            {
+                ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatuses[view], null, "-1", null, null, "-1");
+                userScoreInputText = "";
+                watchingPriority = "";
+                grid = SetGrid();
+                Content = grid;
+            };
+
+            mainSP.Children.Add(new TextBlock()
+            {
+                Text = $"Entry ID = {animeEntryXML.Element("id").Value} / Entry Title = {animeEntryXML.Element("title").Value}",
+                TextWrapping = TextWrapping.Wrap,
+                FontSize = 14,
+                Margin = new Thickness(0,0,0,10),
+                Foreground = Application.Current.Resources["AppColorForText"] as SolidColorBrush
+            });
+            mainSP.Children.Add(new TextBlock()
+            {
+                Text = "Either you messed with this particual entry in the xml file or something has gone wrong. If you think this is a bug, then please report it in my github, which you can find by pressing 'About' button. Please explain there what you changed to cause this outcome. Consider adding your xml there as well.",
+                FontSize = 13,
+                TextWrapping = TextWrapping.Wrap,
+                TextAlignment = TextAlignment.Justify,
+                Margin = new Thickness(0, 0, 0, 10),
+                Foreground = Application.Current.Resources["AppColorForText"] as SolidColorBrush
+            });
+            mainSP.Children.Add(reloadEntry);
+
+            return mainSP;
         }
 
         private Image SetCoverImage(string imgUrl)
@@ -253,7 +284,7 @@ namespace DesktopWeeabo.CustomControls
             if (view == 1)
             {
                 bool reviewCondition = userInputTextReview.Length > 0;
-                bool scoreCondition = userScoreInputText.Length > 0;
+                bool scoreCondition = userScoreInputText.Length > 0 && !userScoreInputText.Equals("-1");
                 string userReviewTextBlock = reviewCondition ? userInputTextReview : "You haven't written a review for this anime.";
                 string userScoreTextBlock = scoreCondition ? userScoreInputText : "You haven't scored this anime.";
                 sp.Children.Insert(0, SetUserReviewText("Personal review: ", userReviewTextBlock, SetAddChange("Your personal review: ", true, Visibility.Visible)));
@@ -438,7 +469,7 @@ namespace DesktopWeeabo.CustomControls
             string viewingStatusString = (string)(statusComboBox.SelectedItem as ComboBoxItem).Content;
             if (selectedComboBoxItemIndex == 1) {
                 userInputTextReview = userInputTextBox.Text.Length > 0 ? userInputTextBox.Text : "";
-                userScoreInputText = userScoreInputTextBox.Text.Length > 0 ? userScoreInputTextBox.Text : "";
+                userScoreInputText = userScoreInputTextBox.Text.Length > 0 ? userScoreInputTextBox.Text : "-1";
                 ItemHandler.UpdateSaveFile(animeEntryXML, viewingStatusString, userInputTextReview, userScoreInputText);
             }
             else if (selectedComboBoxItemIndex == 3)
