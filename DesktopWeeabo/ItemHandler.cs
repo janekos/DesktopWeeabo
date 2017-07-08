@@ -11,7 +11,6 @@ namespace DesktopWeeabo
 {
     class ItemHandler
     {
-
         private static string username = "maltest123";
         private static string password = "gfdg987g7df8dfgSAHD";
         private static string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(username + ":" + password));
@@ -20,8 +19,7 @@ namespace DesktopWeeabo
         public async static Task<string> MakeWebSearch(string query) 
         {
             var url = "https://myanimelist.net/api/anime/search.xml?q=" + query;
-            try
-            {
+            try {
                 WebClient client = new WebClient();
                 client.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;            
                 var data = await client.OpenReadTaskAsync(new Uri(url));
@@ -29,25 +27,15 @@ namespace DesktopWeeabo
                 string response = await reader.ReadToEndAsync();
                 reader.Close();
                 return response;
-            }
-            catch
-            {
-                return "Exception was thrown";
-            }
+            } catch { return "Exception was thrown"; }
         }
 
         public static XDocument MakeLocalSearch(string query, string viewingStatus = "")
         {
             CheckAndCreateDirAndFile();
             XDocument doc = null;
-            try
-            {
-                doc = XDocument.Load(path + "/MainEntries.xml");
-            }
-            catch
-            {
-                return null;
-            }
+            try { doc = XDocument.Load(path + "/MainEntries.xml"); }
+            catch { return null; }
             
             XDocument result = new XDocument(new XElement("anime"));
             int queryLen = query.Length;
@@ -80,7 +68,6 @@ namespace DesktopWeeabo
                     }
                 }
             }
-
             return result;
         }
 
@@ -142,14 +129,8 @@ namespace DesktopWeeabo
         {
             CheckAndCreateDirAndFile();
             XDocument settings = null;
-            try
-            {
-                settings = XDocument.Load(path + "/Config.xml");
-            }
-            catch
-            {
-                return null;
-            }
+            try { settings = XDocument.Load(path + "/Config.xml"); }
+            catch { return null; }
             
             XElement root = settings.Root;
             if (!root.Elements().Any())
@@ -197,7 +178,6 @@ namespace DesktopWeeabo
                 root.Element("search").Element("descendingorderby").Value = search.Descending.ToString();
                 settings.Save(path + "/Config.xml");
             }
-
             return settings;
         }
 

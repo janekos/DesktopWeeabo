@@ -43,17 +43,8 @@ namespace DesktopWeeabo
                     watching = new ViewVariables("watching", root.Element("watching").Element("orderby").Value, Convert.ToBoolean(root.Element("watching").Element("descendingorderby").Value));
                     dropped = new ViewVariables("dropped", root.Element("dropped").Element("orderby").Value, Convert.ToBoolean(root.Element("dropped").Element("descendingorderby").Value));
                     search = new ViewVariables("search", root.Element("search").Element("orderby").Value, Convert.ToBoolean(root.Element("search").Element("descendingorderby").Value));
-                }
-                else
-                {
-                    isProgramKill = true;
-                }           
-            }
-            catch
-            {
-                isProgramKill = true;
-            }
-            
+                } else { isProgramKill = true; }           
+            } catch { isProgramKill = true; }            
         }
 
         public static void SaveVariables()

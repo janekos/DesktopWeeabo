@@ -24,5 +24,9 @@
             <ComboBoxItem Content="Personal score" HorizontalAlignment="Left" Width="100"/>
         </ComboBox>
         <CheckBox Style="{StaticResource ChangableCheckBox}" Name="descendingOrderByCheckBox" Content="Descending" HorizontalAlignment="Left" Margin="154,28,0,0" VerticalAlignment="Top" FlowDirection="RightToLeft" Checked="CheckBoxChanged" Unchecked="CheckBoxChanged"/>
+        <DockPanel HorizontalAlignment="Right" Margin="248,28,0,0" VerticalAlignment="Top">
+            <TextBlock Margin="0,0,5,0" Style="{StaticResource ChangableTextBlock}">Entries:</TextBlock>
+            <TextBlock Name="entryCount" Style="{StaticResource ChangableTextBlock}">0</TextBlock>
+        </DockPanel>
     </Grid>
 </UserControl>

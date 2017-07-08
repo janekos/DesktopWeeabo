@@ -18,6 +18,11 @@ namespace DesktopWeeabo
                 DataContext = new NavigationViewModel();
                 System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
                 Search.IsTabStop = true;
+                Loaded += delegate
+                {
+                    NavigationViewModel vm = DataContext as NavigationViewModel;
+                    if ((vm != null) && (vm.SearchCommand.CanExecute(null))){ vm.SearchCommand.Execute(null); }
+                };
             }
             else
             {

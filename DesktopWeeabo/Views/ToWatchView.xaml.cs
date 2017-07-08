@@ -1,22 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Xml.Linq;
 
 namespace DesktopWeeabo.Views
 {
-    public partial class ToWatchView : System.Windows.Controls.UserControl
+    public partial class ToWatchView : UserControl
     {
         private bool wasItemChangedBySystem = false;
         RepeatingViewFunctions rvf = new RepeatingViewFunctions();
@@ -43,19 +30,19 @@ namespace DesktopWeeabo.Views
 
         private void Search_TextChanged(object sender, TextChangedEventArgs e)
         {
-            rvf.TextBlockTimer(sender, listBox, 0, (orderByComboBox.SelectedItem as ComboBoxItem).Content.ToString(), descendingOrderByCheckBox.IsChecked.ToString());
+            rvf.TextBlockTimer(sender, listBox, entryCount, 0, (orderByComboBox.SelectedItem as ComboBoxItem).Content.ToString(), descendingOrderByCheckBox.IsChecked.ToString());
         }
 
         private void Load_animes()
         {
-            rvf.BuildListBoxItems(listBox, "", 0, ConfigClass.ToWatch.OrderBy, ConfigClass.ToWatch.Descending);
+            rvf.BuildListBoxItems(listBox, entryCount, "", 0, ConfigClass.ToWatch.OrderBy, ConfigClass.ToWatch.Descending);
         }
 
         private void SortByComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!wasItemChangedBySystem)
             {
-                rvf.SortByComboBoxTimer(sender, listBox, 0, descendingOrderByCheckBox.IsChecked.ToString());
+                rvf.SortByComboBoxTimer(sender, listBox, entryCount, 0, descendingOrderByCheckBox.IsChecked.ToString());
                 ConfigClass.ToWatch.OrderBy = (orderByComboBox.SelectedItem as ComboBoxItem).Content.ToString();
             }
         }
@@ -64,7 +51,7 @@ namespace DesktopWeeabo.Views
         {
             if (!wasItemChangedBySystem)
             {
-                rvf.SortByDescendingTimer(sender, listBox, 0);
+                rvf.SortByDescendingTimer(sender, listBox, entryCount, 0);
                 ConfigClass.ToWatch.Descending = descendingOrderByCheckBox.IsChecked ?? false;
             }
         }

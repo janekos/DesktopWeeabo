@@ -7,7 +7,6 @@
         xmlns:local="clr-namespace:DesktopWeeabo"
         xmlns:views="clr-namespace:DesktopWeeabo.Views"
         xmlns:viewmodels="clr-namespace:DesktopWeeabo.ViewModels"
-        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
         Title="Desktop Weeabo" Height="450" Width="800" MinHeight="340" MinWidth="550"
         Closing="Window_Closing">
@@ -31,12 +30,6 @@
             <views:SettingsView/>
         </DataTemplate>
     </Window.Resources>
-
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding SearchCommand}" />
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
 
     <Grid Style="{StaticResource ChangableGrid}">
         <Image Source="pack://application:,,,/Resources/tag.png" HorizontalAlignment="Left" Height="67" Margin="10,10,0,0" VerticalAlignment="Top" Width="110"/>

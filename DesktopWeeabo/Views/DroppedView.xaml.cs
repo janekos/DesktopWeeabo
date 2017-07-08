@@ -43,19 +43,19 @@ namespace DesktopWeeabo.Views
 
         private void Search_TextChanged(object sender, TextChangedEventArgs e)
         {
-            rvf.TextBlockTimer(sender, listBox, 3, (orderByComboBox.SelectedItem as ComboBoxItem).Content.ToString(), descendingOrderByCheckBox.IsChecked.ToString());
+            rvf.TextBlockTimer(sender, listBox, entryCount, 3, (orderByComboBox.SelectedItem as ComboBoxItem).Content.ToString(), descendingOrderByCheckBox.IsChecked.ToString());
         }
 
         private void Load_animes()
         {
-            rvf.BuildListBoxItems(listBox, "", 3, ConfigClass.Dropped.OrderBy, ConfigClass.Dropped.Descending);
+            rvf.BuildListBoxItems(listBox, entryCount, "", 3, ConfigClass.Dropped.OrderBy, ConfigClass.Dropped.Descending);
         }
 
         private void SortByComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!wasItemChangedBySystem)
             {
-                rvf.SortByComboBoxTimer(sender, listBox, 3, descendingOrderByCheckBox.IsChecked.ToString());
+                rvf.SortByComboBoxTimer(sender, listBox, entryCount, 3, descendingOrderByCheckBox.IsChecked.ToString());
                 ConfigClass.Dropped.OrderBy = (orderByComboBox.SelectedItem as ComboBoxItem).Content.ToString();
             }
         }
@@ -64,7 +64,7 @@ namespace DesktopWeeabo.Views
         {
             if (!wasItemChangedBySystem)
             {
-                rvf.SortByDescendingTimer(sender, listBox, 3);
+                rvf.SortByDescendingTimer(sender, listBox, entryCount, 3);
                 ConfigClass.Dropped.Descending = descendingOrderByCheckBox.IsChecked ?? false;
             }
         }

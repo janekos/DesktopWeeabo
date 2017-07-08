@@ -9,7 +9,6 @@ namespace DesktopWeeabo.Views
 {
     public partial class SearchView : UserControl
     {
-
         private DispatcherTimer typingTimer, ComboBoxTimer, CheckBoxTimer;
         private string queryMem = "";
         private string orderByMem;
@@ -54,6 +53,7 @@ namespace DesktopWeeabo.Views
                     {
                         listBox.Items.Clear();
                         listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "Try searching for something."));
+                        entryCount.Text = "0";
                         queryMem = "";
                     }
                 };
@@ -112,6 +112,7 @@ namespace DesktopWeeabo.Views
             {
                 listBox.Items.Clear();
                 listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "Loading"));
+                entryCount.Text = "0";
                 string entries = await ItemHandler.MakeWebSearch(queryMem);
                 XDocument localEntries = ItemHandler.MakeLocalSearch(queryMem);
                 string[] viewingStatuses = { "To Watch", "Watched", "Watching", "Dropped" };
@@ -126,6 +127,7 @@ namespace DesktopWeeabo.Views
                             XDocument response;
                             if (orderBy.Equals("No sort")) { response = XDocument.Parse(entries); }
                             else { response = SortEntries(XDocument.Parse(entries), orderByMem, descendingOrder); }
+                            int count = 0;
                             foreach (var e in response.Descendants("entry"))
                             {
                                 int view = -1;
@@ -139,12 +141,15 @@ namespace DesktopWeeabo.Views
                                     }
                                 }
                                 if (view == -1) { listBox.Items.Add(new ListBoxItemForAnime(e, listBox, view, false)); }
+                                count++;
                             }
+                            entryCount.Text = count.ToString();
                         }
                         else
                         {
                             listBox.Items.Clear();
                             listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "No results for '" + query + "'."));
+                            entryCount.Text = "0";
                         }
                     }
                     else if (entries.Equals("Exception was thrown"))
@@ -156,6 +161,7 @@ namespace DesktopWeeabo.Views
                 {
                     listBox.Items.Clear();
                     listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "Something is wrong with the 'MainEntries.xml' file. Consider switching in a back up."));
+                    entryCount.Text = "0";
                 }
                 
             }
