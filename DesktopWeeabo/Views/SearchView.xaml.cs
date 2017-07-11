@@ -114,7 +114,7 @@ namespace DesktopWeeabo.Views
                 listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "Loading"));
                 entryCount.Text = "0";
                 string entries = await ItemHandler.MakeWebSearch(queryMem);
-                XDocument localEntries = ItemHandler.MakeLocalSearch(queryMem);
+                XDocument localEntries = await ItemHandler.MakeLocalSearch(queryMem);
                 string[] viewingStatuses = { "To Watch", "Watched", "Watching", "Dropped" };
 
                 if (localEntries != null)
@@ -133,7 +133,7 @@ namespace DesktopWeeabo.Views
                                 int view = -1;
                                 foreach (var el in localEntries.Descendants("entry"))
                                 {
-                                    if (int.Parse(e.Element("id").Value) == int.Parse(el.Element("id").Value))
+                                    if (e.Element("id").Value.Equals(el.Element("id").Value))
                                     {
                                         view = Array.IndexOf(viewingStatuses, el.Element("viewingstatus").Value);
                                         listBox.Items.Add(new ListBoxItemForAnime(el, listBox, view, false));

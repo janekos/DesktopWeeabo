@@ -30,45 +30,48 @@ namespace DesktopWeeabo
             } catch { return "Exception was thrown"; }
         }
 
-        public static XDocument MakeLocalSearch(string query, string viewingStatus = "")
+        public static Task<XDocument> MakeLocalSearch(string query, string viewingStatus = "")
         {
             CheckAndCreateDirAndFile();
-            XDocument doc = null;
-            try { doc = XDocument.Load(path + "/MainEntries.xml"); }
-            catch { return null; }
-            
-            XDocument result = new XDocument(new XElement("anime"));
-            int queryLen = query.Length;
-            int viewingStatusLen = viewingStatus.Length;
-            
-            foreach (var e in doc.Descendants("entry"))
+            return Task.Run(() =>
             {
-                if (viewingStatusLen != 0)
-                {                
-                    if (e.Element("viewingstatus").Value.Equals(viewingStatus))
+                XDocument doc = null;
+                try { doc = XDocument.Load(path + "/MainEntries.xml"); }
+                catch { return null; }
+
+                XDocument result = new XDocument(new XElement("anime"));
+                int queryLen = query.Length;
+                int viewingStatusLen = viewingStatus.Length;
+
+                foreach (var e in doc.Descendants("entry"))
+                {
+                    if (viewingStatusLen != 0)
                     {
-                        if (queryLen != 0)
+                        if (e.Element("viewingstatus").Value.Equals(viewingStatus))
                         {
-                            if (e.Element("title").Value.ToLower().Contains(query) || e.Element("english").Value.ToLower().Contains(query) || e.Element("synonyms").Value.ToLower().Contains(query))
-                            {                        
+                            if (queryLen != 0)
+                            {
+                                if (e.Element("title").Value.ToLower().Contains(query) || e.Element("english").Value.ToLower().Contains(query) || e.Element("synonyms").Value.ToLower().Contains(query))
+                                {
+                                    result.Root.Add(e);
+                                }
+                            }
+                            else
+                            {
                                 result.Root.Add(e);
                             }
                         }
-                        else
+                    }
+                    else
+                    {
+                        if (e.Element("title").Value.ToLower().Contains(query) || e.Element("english").Value.ToLower().Contains(query) || e.Element("synonyms").Value.ToLower().Contains(query))
                         {
                             result.Root.Add(e);
                         }
                     }
                 }
-                else
-                {
-                    if (e.Element("title").Value.ToLower().Contains(query) || e.Element("english").Value.ToLower().Contains(query) || e.Element("synonyms").Value.ToLower().Contains(query))
-                    {
-                        result.Root.Add(e);
-                    }
-                }
-            }
-            return result;
+                return result;
+            });
         }
 
         public static void UpdateSaveFile(XElement itemToModify, string viewingStatus, string userReview = null, string userScore = null, string userDropReason = null, string currEpisode = null, string watchingPriority = null, bool remove = false)

@@ -1,5 +1,6 @@
 ﻿using DesktopWeeabo.CustomControls;
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -61,14 +62,14 @@ namespace DesktopWeeabo
             CheckBoxTimer.Start();
         }
 
-        public void BuildListBoxItems(ListBox listBox, TextBlock entryCount, string query, int view, string orderBy, bool descendingOrder)
+        public async void BuildListBoxItems(ListBox listBox, TextBlock entryCount, string query, int view, string orderBy, bool descendingOrder)
         {
             listBox.Items.Clear();
             listBox.Items.Add(new NotifitacationMessagesForListBox(listBox.ActualHeight, "Loading"));
             entryCount.Text = "0";
             string[] viewingStatuses = { "To Watch", "Watched", "Watching", "Dropped" };
             orderByMem = orderBy.Length > 0 ? orderBy : orderByMem;
-            XDocument localEntries = ItemHandler.MakeLocalSearch(query, viewingStatuses[view]);
+            XDocument localEntries = await ItemHandler.MakeLocalSearch(query, viewingStatuses[view]);
             if (localEntries != null)
             {
                 XDocument entries = SortEntries(listBox, localEntries, orderByMem, descendingOrder);
@@ -79,7 +80,10 @@ namespace DesktopWeeabo
                     int count = 0;
                     foreach (var e in entries.Descendants("entry"))
                     {
-                        listBox.Items.Add(new ListBoxItemForAnime(e, listBox, view, true));
+                        await listBox.Dispatcher.BeginInvoke(new Action(delegate ()
+                         {
+                             listBox.Items.Add(new ListBoxItemForAnime(e, listBox, view, true));
+                         }));
                         count++;
                     }
                     entryCount.Text = count.ToString();

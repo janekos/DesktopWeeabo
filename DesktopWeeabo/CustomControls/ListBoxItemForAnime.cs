@@ -696,6 +696,7 @@ namespace DesktopWeeabo.CustomControls
             text = text.Replace("&rsquo;", "'");
             text = text.Replace("<em>", "");
             text = text.Replace("</em>", "");
+            text = text.Replace("&quot;", "");
 
             return text;
         }
