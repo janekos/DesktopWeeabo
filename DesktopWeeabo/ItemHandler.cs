@@ -7,21 +7,19 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Xml.Linq;
 
-namespace DesktopWeeabo{
-
-    class ItemHandler{
-
+namespace DesktopWeeabo
+{
+    class ItemHandler
+    {
         private static string username = "maltest123";
         private static string password = "gfdg987g7df8dfgSAHD";
         private static string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(username + ":" + password));
         private static string path = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),"DesktopWeeabo");
 
-        public async static Task<string> MakeWebSearch(string query){
-
+        public async static Task<string> MakeWebSearch(string query) 
+        {
             var url = "https://myanimelist.net/api/anime/search.xml?q=" + query;
-
             try {
-
                 WebClient client = new WebClient();
                 client.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;            
                 var data = await client.OpenReadTaskAsync(new Uri(url));
@@ -29,17 +27,14 @@ namespace DesktopWeeabo{
                 string response = await reader.ReadToEndAsync();
                 reader.Close();
                 return response;
-
-            } catch {
-                return "Exception was thrown";
-            }
+            } catch { return "Exception was thrown"; }
         }
 
-        public static Task<XDocument> MakeLocalSearch(string query, string viewingStatus = ""){
-
+        public static Task<XDocument> MakeLocalSearch(string query, string viewingStatus = "")
+        {
             CheckAndCreateDirAndFile();
-
-            return Task.Run(() => {
+            return Task.Run(() =>
+            {
                 XDocument doc = null;
                 try { doc = XDocument.Load(path + "/MainEntries.xml"); }
                 catch { return null; }
@@ -48,57 +43,68 @@ namespace DesktopWeeabo{
                 int queryLen = query.Length;
                 int viewingStatusLen = viewingStatus.Length;
 
-                foreach (var e in doc.Descendants("entry")){
-
-                    if (viewingStatusLen != 0){
-
-                        if (e.Element("viewingstatus").Value.Equals(viewingStatus)){
-
-                            if (queryLen != 0){
-
-                                if (e.Element("title").Value.ToLower().Contains(query) || e.Element("english").Value.ToLower().Contains(query) || e.Element("synonyms").Value.ToLower().Contains(query)){ result.Root.Add(e); }
-
-                            } else { result.Root.Add(e); }
+                foreach (var e in doc.Descendants("entry"))
+                {
+                    if (viewingStatusLen != 0)
+                    {
+                        if (e.Element("viewingstatus").Value.Equals(viewingStatus))
+                        {
+                            if (queryLen != 0)
+                            {
+                                if (e.Element("title").Value.ToLower().Contains(query) || e.Element("english").Value.ToLower().Contains(query) || e.Element("synonyms").Value.ToLower().Contains(query))
+                                {
+                                    result.Root.Add(e);
+                                }
+                            }
+                            else
+                            {
+                                result.Root.Add(e);
+                            }
                         }
-                    } else {
-
-                        if (e.Element("title").Value.ToLower().Contains(query) || e.Element("english").Value.ToLower().Contains(query) || e.Element("synonyms").Value.ToLower().Contains(query)){ result.Root.Add(e); }
+                    }
+                    else
+                    {
+                        if (e.Element("title").Value.ToLower().Contains(query) || e.Element("english").Value.ToLower().Contains(query) || e.Element("synonyms").Value.ToLower().Contains(query))
+                        {
+                            result.Root.Add(e);
+                        }
                     }
                 }
                 return result;
             });
         }
 
-        public static void UpdateSaveFile(XElement itemToModify, string viewingStatus, string userReview = null, string userScore = null, string userDropReason = null, string currEpisode = null, string watchingPriority = null, bool remove = false){
+        public static void UpdateSaveFile(XElement itemToModify, string viewingStatus, string userReview = null, string userScore = null, string userDropReason = null, string currEpisode = null, string watchingPriority = null, bool remove = false)
+        {
             CheckAndCreateDirAndFile();
 
             XDocument doc = XDocument.Load(path + "/MainEntries.xml");
             Boolean entryExists = false;
             
-            foreach (var e in doc.Descendants("entry")){
-
-                if (int.Parse(e.Element("id").Value) == int.Parse(itemToModify.Element("id").Value)){
-
-                    if (remove){
-
+            foreach (var e in doc.Descendants("entry"))
+            {
+                if (int.Parse(e.Element("id").Value) == int.Parse(itemToModify.Element("id").Value))
+                {
+                    if (remove)
+                    {
                         e.Remove();
-
-                    } else {
-
+                    }
+                    else
+                    {
                         e.Element("viewingstatus").Value = viewingStatus;
                         if (userReview != null) { e.Element("review").Value = userReview; }
                         if (userScore != null) { e.Element("personal_score").Value = userScore.Length > 0 ? userScore: "-1"; }
                         if (userDropReason != null) { e.Element("dropreason").Value = userDropReason; }
                         if (currEpisode != null) { e.Element("currepisode").Value = currEpisode; }
                         if (watchingPriority != null) { e.Element("watch_priority").Value = watchingPriority.Length > 0 ? watchingPriority : "-1"; }
-                    }
-                    
+                    }                    
                     entryExists = true;
                     break;
                 }
             }
 
-            if (!entryExists){
+            if (!entryExists)
+            {
                 itemToModify.Add(
                     new XElement("viewingstatus", viewingStatus),
                     new XElement("review", userReview != null ? userReview : ""),
@@ -113,27 +119,25 @@ namespace DesktopWeeabo{
             doc.Save(path + "/MainEntries.xml");
         }        
 
-        public static void CreateBackUp(){
-
-            if (File.Exists(path + "/MainEntries.xml")){
-
+        public static void CreateBackUp()
+        {
+            if (File.Exists(path + "/MainEntries.xml"))
+            {
                 if (!Directory.Exists(path+"/BackUp")) { Directory.CreateDirectory(path+ "/BackUp"); }
-
                 File.Copy(path + "/MainEntries.xml", path + "/BackUp/MainEntries" + DateTime.Now.ToString("_dd_MM_yyyy") + ".xml", true);
             }
         }
 
-        public static XDocument ManageSettings(string backUp = "", SolidColorBrush color = null, ViewVariables towatch = null, ViewVariables watched = null, ViewVariables watching = null, ViewVariables dropped = null, ViewVariables search = null){
-
+        public static XDocument ManageSettings(string backUp = "", SolidColorBrush color = null, ViewVariables towatch = null, ViewVariables watched = null, ViewVariables watching = null, ViewVariables dropped = null, ViewVariables search = null)
+        {
             CheckAndCreateDirAndFile();
             XDocument settings = null;
-
             try { settings = XDocument.Load(path + "/Config.xml"); }
             catch { return null; }
             
             XElement root = settings.Root;
-
-            if (!root.Elements().Any()){
+            if (!root.Elements().Any())
+            {
                 settings.Root.Add(
                         new XElement("comment", "Wait! I seriously suggest not touching anything here. In case of fire just delete this file."),
                         new XElement("backup", "true"),
@@ -161,8 +165,8 @@ namespace DesktopWeeabo{
                     );
                 settings.Save(path + "/Config.xml");
             }
-
-            if (backUp.Length > 0){
+            if (backUp.Length > 0)
+            {
                 root.Element("backup").Value = backUp;
                 root.Element("color").Value = color.ToString();
                 root.Element("towatch").Element("orderby").Value = towatch.OrderBy;
@@ -177,19 +181,18 @@ namespace DesktopWeeabo{
                 root.Element("search").Element("descendingorderby").Value = search.Descending.ToString();
                 settings.Save(path + "/Config.xml");
             }
-
             return settings;
         }
 
-        private static void CheckAndCreateDirAndFile(){
-
+        private static void CheckAndCreateDirAndFile()
+        {
             if (!Directory.Exists(path)){ Directory.CreateDirectory(path); }
             if (!File.Exists(path + "/MainEntries.xml")){ CreateSaveFile("/MainEntries.xml", "anime"); }
             if (!File.Exists(path + "/Config.xml")){ CreateSaveFile("/Config.xml", "config"); }
         }
 
-        private static void CreateSaveFile(string fname, string rootElementName){
-
+        private static void CreateSaveFile(string fname, string rootElementName)
+        {
             XDocument doc = new XDocument(new XElement(rootElementName));
             doc.Save(path + fname);
         }

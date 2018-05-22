@@ -8,6 +8,5 @@ namespace DesktopWeeabo.ViewModels
 {
     class ToWatchViewModel
     {
-
     }
 }
