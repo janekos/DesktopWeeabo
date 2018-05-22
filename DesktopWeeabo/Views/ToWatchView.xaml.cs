@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Windows.Controls;
 
 namespace DesktopWeeabo.Views
@@ -7,7 +6,7 @@ namespace DesktopWeeabo.Views
     public partial class ToWatchView : UserControl
     {
         private bool wasItemChangedBySystem = false;
-        RepeatingViewFunctions rvf = new RepeatingViewFunctions();
+        private RepeatingViewFunctions rvf = new RepeatingViewFunctions();
 
         public ToWatchView()
         {

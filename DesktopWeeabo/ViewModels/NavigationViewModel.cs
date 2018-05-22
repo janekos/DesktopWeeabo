@@ -1,11 +1,5 @@
-﻿using DesktopWeeabo;
-using DesktopWeeabo.ViewModels;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace DesktopWeeabo.ViewModels
@@ -38,38 +32,18 @@ namespace DesktopWeeabo.ViewModels
             SettingsCommand = new BaseCommand(OpenSettings);
         }
 
-        private void OpenSearch(object obj)
-        {
-            SelectedViewModel = new SearchViewModel();
-        }
-        private void OpenToWatch(object obj)
-        {
-            SelectedViewModel = new ToWatchViewModel();
-        }
-        private void OpenWatched(object obj)
-        {
-            SelectedViewModel = new WatchedViewModel();
-        }
-        private void OpenWatching(object obj)
-        {
-            SelectedViewModel = new WatchingViewModel();
-        }
-        private void OpenDropped(object obj)
-        {
-            SelectedViewModel = new DroppedViewModel();
-        }
-        private void OpenSettings(object obj)
-        {
-            SelectedViewModel = new SettingsViewModel();
-        }
+        private void OpenSearch(object obj){ SelectedViewModel = new SearchViewModel(); }
+        private void OpenToWatch(object obj){ SelectedViewModel = new ToWatchViewModel(); }
+        private void OpenWatched(object obj){ SelectedViewModel = new WatchedViewModel(); }
+        private void OpenWatching(object obj){ SelectedViewModel = new WatchingViewModel(); }
+        private void OpenDropped(object obj){ SelectedViewModel = new DroppedViewModel(); }
+        private void OpenSettings(object obj){ SelectedViewModel = new SettingsViewModel(); }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
         private void OnPropertyChanged(string propName)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propName));
-            }
+            if (PropertyChanged != null){ PropertyChanged(this, new PropertyChangedEventArgs(propName)); }
         }
     }
 
@@ -79,9 +53,7 @@ namespace DesktopWeeabo.ViewModels
         private Action<object> _method;
         public event EventHandler CanExecuteChanged;
 
-        public BaseCommand(Action<object> method) : this(method, null)
-        {
-        }
+        public BaseCommand(Action<object> method) : this(method, null){}
 
         public BaseCommand(Action<object> method, Predicate<object> canExecute)
         {
